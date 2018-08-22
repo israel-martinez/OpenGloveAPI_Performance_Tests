@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+             xmlns:local="clr-namespace:C_SharpTest" 
+             x:Class="C_SharpTest.MainPage">
+    <StackLayout Orientation="Vertical" Padding="5,20,5,5">
+
+        <StackLayout Orientation="Horizontal" HorizontalOptions="Center" >
+            <Label Text="WebSocket Status: " HorizontalOptions="StartAndExpand"/>
+            <Label x:Name="label_webSocketStatus" Text="Disconnected"/>
+            <Switch Toggled="Handle_Toggled_WebSocketConnection"/>
+        </StackLayout>
+
+        <StackLayout Orientation="Horizontal" HorizontalOptions="Center" >
+            <Label Text="BluetoothDevice Status: " HorizontalOptions="StartAndExpand" />
+            <Label x:Name="label_bluetoothDeviceStatus" Text="Disconnected"/>
+            <Switch Toggled="Handle_Toggled_BluetoothDeviceConnection"/>
+        </StackLayout>
+
+        <StackLayout Orientation="Horizontal" HorizontalOptions="Center" >
+            <Label Text="OpenGlove Status: " HorizontalOptions="StartAndExpand"/>
+            <Label x:Name="label_opengloveStatus" Text="Stop"/>
+            <Switch Toggled="Handle_Toggled_StartStopOpenGlove"/>
+        </StackLayout>
+
+    </StackLayout>
+</ContentPage>

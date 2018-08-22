@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackOnBuild>true</PackOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Xamarin.Forms" Version="3.0.0.482510" />
+    <PackageReference Include="WebSocketSharp-netstandard" Version="1.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="OpenGlove_API_C_Sharp_HL\" />
+    <Folder Include="OpenGloveAPI_C_Sharp_HL\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="OpenGloveAPI_C_Sharp_HL\EmptyClass.cs" />
+  </ItemGroup>
+</Project>
