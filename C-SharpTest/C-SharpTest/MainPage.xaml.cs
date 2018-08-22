@@ -1,8 +1,5 @@
 ﻿using Xamarin.Forms;
-using System;
 using System.Threading;
-using System.Text;
-using WebSocketSharp;
 using CSharpTest.OpenGloveAPI_C_Sharp_HL;
 
 namespace C_SharpTest

@@ -10,10 +10,10 @@
     <PackageReference Include="WebSocketSharp-netstandard" Version="1.0.1" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="OpenGlove_API_C_Sharp_HL\" />
     <Folder Include="OpenGloveAPI_C_Sharp_HL\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="OpenGloveAPI_C_Sharp_HL\EmptyClass.cs" />
+    <Compile Remove="OpenGlove_API_C_Sharp_HL\Communication2.cs" />
   </ItemGroup>
 </Project>

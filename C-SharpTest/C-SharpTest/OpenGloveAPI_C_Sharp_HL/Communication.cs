@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using WebSocketSharp;
+using WebSocketSharp; //Nuget: WebSocketSharp-netstandard (1.0.1)
 
 namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
 {
