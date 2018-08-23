@@ -4,7 +4,42 @@
              xmlns:local="clr-namespace:C_SharpTest" 
              x:Class="C_SharpTest.MainPage">
     <StackLayout Orientation="Vertical" Padding="5,20,5,5">
+        <Label Text="OpenGlove instance:"/>
+        
+        <Grid HorizontalOptions="CenterAndExpand">
+            <Grid.RowDefinitions>
+                
+            </Grid.RowDefinitions>
+            
+            <Grid.ColumnDefinitions>
+                
+            </Grid.ColumnDefinitions>
 
+            <StackLayout Grid.Row="0" Grid.Column="0" 
+                Orientation="Vertical">
+                <Label Text="Name: " />
+                <Label x:Name="label_Name" Text=""/>
+            </StackLayout>
+            
+            <StackLayout Grid.Row="0" Grid.Column="1" 
+                Orientation="Vertical">
+                <Label Text="ConfigurationName: " />
+                <Label x:Name="label_ConfigurationName" Text="" />
+            </StackLayout>
+
+            <StackLayout Grid.Row="1" Grid.Column="0" 
+                Orientation="Vertical">
+                <Label Text="BluetoothDeviceName: " />
+                <Label x:Name="label_BluetoothDeviceName" Text="Name: " />
+            </StackLayout>
+            
+            <StackLayout Grid.Row="1" Grid.Column="1" 
+                Orientation="Vertical">
+                <Label Text="WebSocketEndPoint: " />
+                <Label x:Name="label_WebSocketEndPoint" Text="" />
+            </StackLayout>
+        </Grid>
+        
         <StackLayout Orientation="Horizontal" HorizontalOptions="Center" >
             <Label Text="WebSocket Status: " HorizontalOptions="StartAndExpand"/>
             <Label x:Name="label_webSocketStatus" Text="Disconnected"/>
@@ -23,5 +58,16 @@
             <Switch Toggled="Handle_Toggled_StartStopOpenGlove"/>
         </StackLayout>
 
+        <StackLayout Orientation="Horizontal" HorizontalOptions="Center" >
+            <Label Text="Total Of Messages Received: " HorizontalOptions="StartAndExpand"/>
+            <Label x:Name="label_MessagesReceivedCounter" Text=""/>
+        </StackLayout>
+        
+        <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand" >
+            <Label Text="OnMessage: " HorizontalOptions="Fill"/>
+            <Label x:Name="label_OnMessage" Text=""/>
+        </StackLayout>
+
+        
     </StackLayout>
 </ContentPage>

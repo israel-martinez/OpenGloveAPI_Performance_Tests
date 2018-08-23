@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using WebSocketSharp; //Nuget: WebSocketSharp-netstandard (1.0.1)
 
 namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
@@ -11,6 +12,19 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
         public MessageGenerator MessageGenerator { get; set; }
         public string BluetoothDeviceName { get; set; }
         private bool _IsConnectedToBluetoothDevice { get; set; }
+
+
+        public delegate void FingerMovement(int region, int value);
+        public delegate void AccelerometerValues(float ax, float ay, float az);
+        public delegate void GyroscopeValues(float gx, float gy, float gz);
+        public delegate void MagnometerValues(float mx, float my, float mz);
+        public delegate void AllIMUValues(float ax, float ay, float az, float gx, float gy, float gz, float mx, float my, float mz);
+
+        public event FingerMovement FlexorFunction;
+        public event AccelerometerValues AccelerometerFunction;
+        public event GyroscopeValues GyroscopeFunction;
+        public event MagnometerValues MagnometerFunction;
+        public event AllIMUValues AllIMUValuesFunction;
 
         public bool IsConnectedToBluetoohDevice { get { return _IsConnectedToBluetoothDevice; } }
         public Communication(string bluetoothDeviceName, string url)
@@ -34,11 +48,65 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
             Debug.WriteLine($"Added this OpenGloveDevice to Server");
         }
 
-        private void OnMessage(object sender, EventArgs e)
+        private void OnMessage(object sender, MessageEventArgs e)
         {
             //TODO update _IsConnectedToBluetoothDevice if Connected or Disconnected
             //TODO this listener Flexors and IMU messages
-            Debug.WriteLine($"Received from Server: {e.ToString()}");
+            Debug.WriteLine($"Received from Server: {e.Data}");
+
+            MessageHandler(e.Data);
+                
+        }
+
+        private void MessageHandler(string message)
+        {
+            int mapping, value;
+            float valueX, valueY, valueZ;
+            string[] words;
+
+            if (message != null)
+            {
+                words = message.Split(',');
+                try
+                {
+                    switch (words[0])
+                    {
+                        case "f":
+                            mapping = Int32.Parse(words[1]);
+                            value = Int32.Parse(words[2]);
+                            FlexorFunction?.Invoke(mapping, value);
+                            break;
+                        case "a":
+                            valueX = float.Parse(words[1], CultureInfo.InvariantCulture);
+                            valueY = float.Parse(words[2], CultureInfo.InvariantCulture);
+                            valueZ = float.Parse(words[3], CultureInfo.InvariantCulture);
+                            AccelerometerFunction?.Invoke(valueX, valueY, valueZ);
+                            break;
+                        case "g":
+                            valueX = float.Parse(words[1], CultureInfo.InvariantCulture);
+                            valueY = float.Parse(words[2], CultureInfo.InvariantCulture);
+                            valueZ = float.Parse(words[3], CultureInfo.InvariantCulture);
+                            GyroscopeFunction?.Invoke(valueX, valueY, valueZ);
+                            break;
+                        case "m":
+                            valueX = float.Parse(words[1], CultureInfo.InvariantCulture);
+                            valueY = float.Parse(words[2], CultureInfo.InvariantCulture);
+                            valueZ = float.Parse(words[3], CultureInfo.InvariantCulture);
+                            MagnometerFunction?.Invoke(valueX, valueY, valueZ);
+                            break;
+                        case "z":
+                            AllIMUValuesFunction?.Invoke(float.Parse(words[1], CultureInfo.InvariantCulture), float.Parse(words[2], CultureInfo.InvariantCulture), float.Parse(words[3], CultureInfo.InvariantCulture), float.Parse(words[4], CultureInfo.InvariantCulture), float.Parse(words[5], CultureInfo.InvariantCulture), float.Parse(words[6], CultureInfo.InvariantCulture), float.Parse(words[7], CultureInfo.InvariantCulture), float.Parse(words[8], CultureInfo.InvariantCulture), float.Parse(words[9], CultureInfo.InvariantCulture));
+                            break;
+                        default:
+                            break;
+                    }
+
+                }
+                catch
+                {
+                    Console.WriteLine("ERROR: BAD FORMAT");
+                }
+            }
         }
 
         private void OnClose(object sender, EventArgs e)

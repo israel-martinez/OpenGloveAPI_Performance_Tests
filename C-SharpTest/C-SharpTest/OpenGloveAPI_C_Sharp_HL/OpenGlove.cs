@@ -16,6 +16,7 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
         public bool IsConnectedToBluetoohDevice { get { return _IsConnectedToBluetoohDevice; } }
         // TODO Need add data listener (flexors and IMU data ) EventHandlers ... for get subscribers in OnMessage of WebSocket ...
 
+
         public OpenGlove(string name, string bluetoothDeviceName, string configurationName, string webSocketEndPointUrl)
         {
             this.Name = name;
