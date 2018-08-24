@@ -14,17 +14,21 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
         private bool _IsConnectedToBluetoothDevice { get; set; }
 
 
-        public delegate void FingerMovement(int region, int value);
+        public delegate void FlexorMovement(int region, int value);
         public delegate void AccelerometerValues(float ax, float ay, float az);
         public delegate void GyroscopeValues(float gx, float gy, float gz);
         public delegate void MagnometerValues(float mx, float my, float mz);
         public delegate void AllIMUValues(float ax, float ay, float az, float gx, float gy, float gz, float mx, float my, float mz);
+        public delegate void BluetoothDeviceState(bool isConnected);
+        public delegate void InfoMessage(string message);
 
-        public event FingerMovement FlexorFunction;
-        public event AccelerometerValues AccelerometerFunction;
-        public event GyroscopeValues GyroscopeFunction;
-        public event MagnometerValues MagnometerFunction;
-        public event AllIMUValues AllIMUValuesFunction;
+        public event FlexorMovement OnFlexorValueReceived;
+        public event AccelerometerValues OnAccelerometerValuesReceived;
+        public event GyroscopeValues OnGyroscopeValuesReceived;
+        public event MagnometerValues OnMagnometerValuesReceived;
+        public event AllIMUValues OnAllIMUValuesReceived;
+        public event BluetoothDeviceState OnBluetoothDeviceStateChanged;
+        public event InfoMessage OnInfoMessagesReceived;
 
         public bool IsConnectedToBluetoohDevice { get { return _IsConnectedToBluetoothDevice; } }
         public Communication(string bluetoothDeviceName, string url)
@@ -44,18 +48,17 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
         private void OnOpen(object sender, EventArgs e)
         {
             Debug.WriteLine($"Websocket Connected to Server!");
-            this.AddOpenGloveDevice(BluetoothDeviceName);
-            Debug.WriteLine($"Added this OpenGloveDevice to Server");
+            this.AddOpenGloveDeviceToServer(BluetoothDeviceName);
+            Debug.WriteLine($"OpenGlove.Communication.AddOpenGloveToServer()");
+            this.StartCaptureDataFromServer(BluetoothDeviceName);
+            Debug.WriteLine($"Communication.StartCaptureDataFromServer()");
+
         }
 
         private void OnMessage(object sender, MessageEventArgs e)
         {
-            //TODO update _IsConnectedToBluetoothDevice if Connected or Disconnected
-            //TODO this listener Flexors and IMU messages
             Debug.WriteLine($"Received from Server: {e.Data}");
-
             MessageHandler(e.Data);
-                
         }
 
         private void MessageHandler(string message)
@@ -74,30 +77,35 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
                         case "f":
                             mapping = Int32.Parse(words[1]);
                             value = Int32.Parse(words[2]);
-                            FlexorFunction?.Invoke(mapping, value);
+                            OnFlexorValueReceived?.Invoke(mapping, value);
                             break;
                         case "a":
                             valueX = float.Parse(words[1], CultureInfo.InvariantCulture);
                             valueY = float.Parse(words[2], CultureInfo.InvariantCulture);
                             valueZ = float.Parse(words[3], CultureInfo.InvariantCulture);
-                            AccelerometerFunction?.Invoke(valueX, valueY, valueZ);
+                            OnAccelerometerValuesReceived?.Invoke(valueX, valueY, valueZ);
                             break;
                         case "g":
                             valueX = float.Parse(words[1], CultureInfo.InvariantCulture);
                             valueY = float.Parse(words[2], CultureInfo.InvariantCulture);
                             valueZ = float.Parse(words[3], CultureInfo.InvariantCulture);
-                            GyroscopeFunction?.Invoke(valueX, valueY, valueZ);
+                            OnGyroscopeValuesReceived?.Invoke(valueX, valueY, valueZ);
                             break;
                         case "m":
                             valueX = float.Parse(words[1], CultureInfo.InvariantCulture);
                             valueY = float.Parse(words[2], CultureInfo.InvariantCulture);
                             valueZ = float.Parse(words[3], CultureInfo.InvariantCulture);
-                            MagnometerFunction?.Invoke(valueX, valueY, valueZ);
+                            OnMagnometerValuesReceived?.Invoke(valueX, valueY, valueZ);
                             break;
                         case "z":
-                            AllIMUValuesFunction?.Invoke(float.Parse(words[1], CultureInfo.InvariantCulture), float.Parse(words[2], CultureInfo.InvariantCulture), float.Parse(words[3], CultureInfo.InvariantCulture), float.Parse(words[4], CultureInfo.InvariantCulture), float.Parse(words[5], CultureInfo.InvariantCulture), float.Parse(words[6], CultureInfo.InvariantCulture), float.Parse(words[7], CultureInfo.InvariantCulture), float.Parse(words[8], CultureInfo.InvariantCulture), float.Parse(words[9], CultureInfo.InvariantCulture));
+                            OnAllIMUValuesReceived?.Invoke(float.Parse(words[1], CultureInfo.InvariantCulture), float.Parse(words[2], CultureInfo.InvariantCulture), float.Parse(words[3], CultureInfo.InvariantCulture), float.Parse(words[4], CultureInfo.InvariantCulture), float.Parse(words[5], CultureInfo.InvariantCulture), float.Parse(words[6], CultureInfo.InvariantCulture), float.Parse(words[7], CultureInfo.InvariantCulture), float.Parse(words[8], CultureInfo.InvariantCulture), float.Parse(words[9], CultureInfo.InvariantCulture));
                             break;
+                        case "b":
+                            OnBluetoothDeviceStateChanged?.Invoke(bool.Parse(words[1]));
+                            break;
+                            
                         default:
+                            OnInfoMessagesReceived?.Invoke(message);
                             break;
                     }
 
@@ -129,14 +137,14 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
             this.WebSocket.Send(MessageGenerator.StopOpenGlove(bluetoothDeviceName));
         }
 
-        public void AddOpenGloveDevice(string bluetoothDeviceName)
+        public void AddOpenGloveDeviceToServer(string bluetoothDeviceName)
         {
-            this.WebSocket.Send(MessageGenerator.AddOpenGloveDevice(bluetoothDeviceName));
+            this.WebSocket.Send(MessageGenerator.AddOpenGloveDeviceToServer(bluetoothDeviceName));
         }
 
-        public void RemoveOpenGloveDevice(string bluetoothDeviceName)
+        public void RemoveOpenGloveDeviceFromServer(string bluetoothDeviceName)
         {
-            this.WebSocket.Send(MessageGenerator.AddOpenGloveDevice(bluetoothDeviceName));
+            this.WebSocket.Send(MessageGenerator.RemoveOpenGloveDeviceFromServer(bluetoothDeviceName));
         }
         public void SaveOpenGloveConfiguration(string bluetoothDeviceName, string configurationName)
         {
@@ -291,6 +299,11 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
         public void DisconnectFromWebSocketServer()
         {
             this.WebSocket.Close();
+        }
+
+        public void GetOpenGloveArduinoVersionSoftware(string bluetoothDeviceName)
+        {
+            this.WebSocket.Send(MessageGenerator.GetOpenGloveArduinoVersionSoftware(bluetoothDeviceName));
         }
     }
 }

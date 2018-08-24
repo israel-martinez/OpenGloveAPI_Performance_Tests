@@ -9,8 +9,8 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
         {
             StartOpenGlove = 0,
             StopOpenGlove,
-            AddOpenGloveDevice,
-            RemoveOpenGloveDevice,
+            AddOpenGloveDeviceToServer,
+            RemoveOpenGloveDeviceFromServer,
             SaveOpenGloveConfiguration,
             ConnectToBluetoothDevice,
             DisconnectFromBluetoothDevice,
@@ -51,6 +51,8 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
             CalibrateIMU,
 
             SetLoopDelay = 39,
+
+            GetOpenGloveArduinoSofwareVersion = 99,
         }
         public string MainSeparator { get; set; }
         public string SecondarySeparator { get; set; }
@@ -75,6 +77,16 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
             return String.Join(separator, list);
         }
 
+        private string JoinList(string separator, List<string> list)
+        {
+            return String.Join(separator, list);
+        }
+
+        private string JoinList(string separator, List<int> list)
+        {
+            return String.Join(separator, list);
+        }
+
         private string BooleanString(bool value)
         {
             string booleanString = (value) ? "True" : "False";
@@ -91,14 +103,14 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
             return Join(MainSeparator, (int)OpenGloveActions.StopOpenGlove, bluetoothDeviceName, Empty, Empty, Empty);
         }
 
-        public string AddOpenGloveDevice(string bluetoothDeviceName)
+        public string AddOpenGloveDeviceToServer(string bluetoothDeviceName)
         {
-            return Join(MainSeparator, (int)OpenGloveActions.AddOpenGloveDevice, bluetoothDeviceName, Empty, Empty, Empty);
+            return Join(MainSeparator, (int)OpenGloveActions.AddOpenGloveDeviceToServer, bluetoothDeviceName, Empty, Empty, Empty);
         }
 
-        public string RemoveOpenGloveDevice(string bluetoothDeviceName)
+        public string RemoveOpenGloveDeviceFromServer(string bluetoothDeviceName)
         {
-            return Join(MainSeparator, (int)OpenGloveActions.RemoveOpenGloveDevice, bluetoothDeviceName, Empty, Empty, Empty);
+            return Join(MainSeparator, (int)OpenGloveActions.RemoveOpenGloveDeviceFromServer, bluetoothDeviceName, Empty, Empty, Empty);
         }
         public string SaveOpenGloveConfiguration(string bluetoothDeviceName, string configurationName)
         {
@@ -132,7 +144,7 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
 
         public string AddActuators(string bluetoothDeviceName, List<int> regions, List<int> positivePins, List<int> negativePins)
         {
-            return Join(MainSeparator, (int)OpenGloveActions.AddActuators, bluetoothDeviceName, Join(SecondarySeparator, regions), Join(SecondarySeparator, positivePins), Join(SecondarySeparator, negativePins));
+            return Join(MainSeparator, (int)OpenGloveActions.AddActuators, bluetoothDeviceName, JoinList(SecondarySeparator, regions), JoinList(SecondarySeparator, positivePins), JoinList(SecondarySeparator, negativePins));
         }
 
         public string RemoveActuator(string bluetoothDeviceName, int region)
@@ -142,12 +154,12 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
 
         public string RemoveActuators(string bluetoothDeviceName, List<int> regions)
         {
-            return Join(MainSeparator, (int)OpenGloveActions.RemoveActuators, bluetoothDeviceName, Join(SecondarySeparator, regions), Empty, Empty);
+            return Join(MainSeparator, (int)OpenGloveActions.RemoveActuators, bluetoothDeviceName, JoinList(SecondarySeparator, regions), Empty, Empty);
         }
 
         public string ActivateActuators(string bluetoothDeviceName, List<int> regions, List<string> intensities)
         {
-            return Join(MainSeparator, (int)OpenGloveActions.ActivateActuators, bluetoothDeviceName, Join(SecondarySeparator, regions), Join(SecondarySeparator, intensities), Empty);
+            return Join(MainSeparator, (int)OpenGloveActions.ActivateActuators, bluetoothDeviceName, JoinList(SecondarySeparator, regions), JoinList(SecondarySeparator, intensities), Empty);
         }
 
         public string TurnOnActuators(string bluetoothDeviceName)
@@ -172,7 +184,7 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
 
         public string AddFlexors(string bluetoothDeviceName, List<int> regions, List<int> pins)
         {
-            return Join(MainSeparator, (int)OpenGloveActions.AddFlexors, bluetoothDeviceName, Join(SecondarySeparator, regions), Join(SecondarySeparator, pins), Empty);
+            return Join(MainSeparator, (int)OpenGloveActions.AddFlexors, bluetoothDeviceName, JoinList(SecondarySeparator, regions), JoinList(SecondarySeparator, pins), Empty);
         }
 
         public string RemoveFlexor(string bluetoothDeviceName, int region)
@@ -182,7 +194,7 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
 
         public string RemoveFlexors(string bluetoothDeviceName, List<int> regions)
         {
-            return Join(MainSeparator, (int)OpenGloveActions.RemoveFlexors, bluetoothDeviceName, Join(SecondarySeparator, regions), Empty, Empty);
+            return Join(MainSeparator, (int)OpenGloveActions.RemoveFlexors, bluetoothDeviceName, JoinList(SecondarySeparator, regions), Empty, Empty);
         }
 
         public string CalibrateFlexors(string bluetoothDeviceName)
@@ -243,6 +255,11 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
         public string SetLoopDelay(string bluetoothDeviceName, int value)
         {
             return Join(MainSeparator, (int)OpenGloveActions.SetLoopDelay, bluetoothDeviceName, Empty, value, Empty);
+        }
+
+        public string GetOpenGloveArduinoVersionSoftware(string bluetoothDeviceName)
+        {
+            return Join(MainSeparator, (int)OpenGloveActions.GetOpenGloveArduinoSofwareVersion, bluetoothDeviceName, Empty, Empty, Empty);
         }
     }
 }

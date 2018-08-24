@@ -23,6 +23,12 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
             this.BluetoothDeviceName = bluetoothDeviceName;
             this.ConfigurationName = configurationName;
             this.Communication = new Communication(bluetoothDeviceName, webSocketEndPointUrl);
+            this.Communication.OnBluetoothDeviceStateChanged += OnBluetoothDeviceStateChanged;
+        }
+
+        private void OnBluetoothDeviceStateChanged(bool isConnected)
+        {
+            this._IsConnectedToBluetoohDevice = isConnected;
         }
 
         //Modify for diferent validation of IsConnected to websocket server in other lenguages of programing and libraries
@@ -44,14 +50,14 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
             this.Communication.StopOpenGlove(BluetoothDeviceName);
         }
 
-        public void AddOpenGloveDevice()
+        public void AddOpenGloveDeviceToServer()
         {
-            this.Communication.AddOpenGloveDevice(BluetoothDeviceName);
+            this.Communication.AddOpenGloveDeviceToServer(BluetoothDeviceName);
         }
 
-        public void RemoveOpenGloveDevice()
+        public void RemoveOpenGloveDeviceFromServer()
         {
-            this.Communication.AddOpenGloveDevice(BluetoothDeviceName);
+            this.Communication.RemoveOpenGloveDeviceFromServer(BluetoothDeviceName);
         }
 
         public void SaveOpenGloveConfiguration()
@@ -113,7 +119,7 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
 
         public void TurnOffActuators()
         {
-            this.Communication.TurnOffFlexors(BluetoothDeviceName);
+            this.Communication.TurnOffActuators(BluetoothDeviceName);
         }
 
         public void TurnOnFlexors()
@@ -246,6 +252,11 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
         public void DisconnectFromWebSocketServer()
         {
             this.Communication.DisconnectFromWebSocketServer();
+        }
+
+        public void GetOpenGloveArduinoVersionSoftware()
+        {
+            this.Communication.GetOpenGloveArduinoVersionSoftware(BluetoothDeviceName);
         }
     }
 
