@@ -11,9 +11,9 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
         public string WebsocketEndpointUrl { get { return Communication.WebSocket.Url.ToString(); } }
         public Communication Communication { get; set; }
         private bool _IsConnectedToWebSocketServer { get { return IsWebSocketConnected(); } set { _IsConnectedToWebSocketServer = value; } }
-        private bool _IsConnectedToBluetoohDevice { get; set; }
+        private bool _IsConnectedToBluetoothDevice { get; set; }
         public bool IsConnectedToWebSocketServer { get { return _IsConnectedToWebSocketServer; } }
-        public bool IsConnectedToBluetoohDevice { get { return _IsConnectedToBluetoohDevice; } }
+        public bool IsConnectedToBluetoohDevice { get { return _IsConnectedToBluetoothDevice; } }
         // TODO Need add data listener (flexors and IMU data ) EventHandlers ... for get subscribers in OnMessage of WebSocket ...
 
 
@@ -22,13 +22,13 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
             this.Name = name;
             this.BluetoothDeviceName = bluetoothDeviceName;
             this.ConfigurationName = configurationName;
-            this.Communication = new Communication(bluetoothDeviceName, webSocketEndPointUrl);
-            this.Communication.OnBluetoothDeviceStateChanged += OnBluetoothDeviceStateChanged;
+            this.Communication = new Communication(bluetoothDeviceName, configurationName, webSocketEndPointUrl);
+            this.Communication.OnBluetoothDeviceConnectionStateChanged += OnBluetoothDeviceConnectionStateChanged;
         }
 
-        private void OnBluetoothDeviceStateChanged(bool isConnected)
+        private void OnBluetoothDeviceConnectionStateChanged(bool isConnected)
         {
-            this._IsConnectedToBluetoohDevice = isConnected;
+            this._IsConnectedToBluetoothDevice = isConnected;
         }
 
         //Modify for diferent validation of IsConnected to websocket server in other lenguages of programing and libraries
@@ -42,7 +42,7 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
 
         public void Start()
         {
-            this.Communication.StartOpenGlove(BluetoothDeviceName, ConfigurationName);
+            this.Communication.StartOpenGlove(BluetoothDeviceName);
         }
 
         public void Stop()
@@ -52,7 +52,7 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
 
         public void AddOpenGloveDeviceToServer()
         {
-            this.Communication.AddOpenGloveDeviceToServer(BluetoothDeviceName);
+            this.Communication.AddOpenGloveDeviceToServer(BluetoothDeviceName, ConfigurationName);
         }
 
         public void RemoveOpenGloveDeviceFromServer()
@@ -68,13 +68,11 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
         public void ConnectToBluetoothDevice()
         {
             this.Communication.ConnectToBluetoothDevice(BluetoothDeviceName);
-            this._IsConnectedToBluetoohDevice = true; //TODO improve this with validation with message from server
         }
 
         public void DisconnectFromBluetoothDevice()
         {
             this.Communication.DisconnectFromBluetoothDevice(BluetoothDeviceName);
-            this._IsConnectedToBluetoohDevice = false; //TODO improve this with validation with message from server
         }
 
         public void StartCaptureDataFromServer()
@@ -110,6 +108,11 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
         public void ActivateActuators(List<int> regions, List<string> intensities)
         {
             this.Communication.ActivateActuators(BluetoothDeviceName, regions, intensities);
+        }
+
+        public void ActivateActuatorsTimeTest(List<int> regions, List<string> intensities)
+        {
+            this.Communication.ActivateActuatorsTimeTest(BluetoothDeviceName, regions, intensities);
         }
 
         public void TurnOnActuators()
@@ -237,6 +240,16 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
             // Need Implement this on OpenGlove Aplication, see SwitchOpenGloveServer in OpenGloveServer class
             // Communication and MessageGenerator methods is OK
             //this.Communication.CalibrateIMU();
+        }
+
+        public void TurnOnIMU()
+        {
+            this.Communication.TurnOnIMU(BluetoothDeviceName);
+        }
+
+        public void TurnOffIMU()
+        {
+            this.Communication.TurnOffIMU(BluetoothDeviceName);
         }
 
         public void SetLoopDelay(int value)

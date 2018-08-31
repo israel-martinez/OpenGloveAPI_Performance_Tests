@@ -1,9 +1,9 @@
 ﻿using Xamarin.Forms;
-using System.Threading;
 using CSharpTest.OpenGloveAPI_C_Sharp_HL;
 using System;
-using System.Diagnostics;
 using System.Collections.Generic;
+using CSharpTest.OpenGloveLatencyTests;
+using System.Diagnostics;
 
 namespace C_SharpTest
 {
@@ -11,14 +11,20 @@ namespace C_SharpTest
     {
         public static string Url = "ws://127.0.0.1:7070";
         public OpenGlove leftHand = new OpenGlove("Left Hand", "OpenGloveIZQ", "leftHand", Url);
-        public CancellationTokenSource cts = new CancellationTokenSource();
         public volatile int MessageReceivedCounter = 0;
 
-        List<int> flexorRegions = new List<int> { 0, 5 };
-        List<int> flexorPins = new List<int> { 17, 17 };
+        List<int> flexorRegions = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        List<int> flexorPins = new List<int> { 17, 17, 17, 17, 17, 17, 17, 17, 17, 17 }; //for simulate more flexors
         List<int> actuatorRegions = new List<int> { 0, 1, 2, 3, 4 };
         List<int> actuatorPositivePins = new List<int> { 11, 10, 9, 3, 6 };
         List<int> actuatorNegativePins = new List<int> { 12, 15, 16, 2, 8 };
+
+        public static LatencyTest latencyTest = new LatencyTest();
+        public volatile int actuatorStepCounter = 0;
+
+        List<int> samplesQuantityList = new List<int> { 100, 1000, 2000, 5000, 10000 };
+        List<string> componentTypeList = new List<string> { "actuators", "flexors&IMU"}; //future supported test { "actuators", "flexors", "flexors&IMU", "actuators&flexor&IMU"};
+        List<int> componentQuantityList = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
         public MainPage()
         {
@@ -37,10 +43,15 @@ namespace C_SharpTest
             leftHand.Communication.OnAllIMUValuesReceived += OnAllIMUValues;
             leftHand.Communication.OnFlexorValueReceived+= OnFlexorFunction;
             leftHand.Communication.OnInfoMessagesReceived += OnInfoMessage;
-            leftHand.Communication.OnBluetoothDeviceStateChanged += OnBluetoothDeviceStateChanged;
+            leftHand.Communication.OnBluetoothDeviceConnectionStateChanged += OnBluetoothDeviceConnectionStateChanged;
+
+            // For latency Tests
+            picker_SamplesQuantity.ItemsSource = samplesQuantityList;
+            picker_ComponentType.ItemsSource = componentTypeList;
+            picker_ComponentQuantity.ItemsSource = componentQuantityList;
         }
 
-        public void OnBluetoothDeviceStateChanged(bool isConnected)
+        public void OnBluetoothDeviceConnectionStateChanged(bool isConnected)
         {
             Device.BeginInvokeOnMainThread(() => {
                 MessageReceivedCounter++;
@@ -121,14 +132,120 @@ namespace C_SharpTest
             }
         }
 
+        public void OnLatencyTestCompleted(string testType, string folderName, string fileName, string storagePath, string columnTitle, int samples, int writingCicleCounter, int readingCicleCounter, int messageReceivedCounter)
+        {
+            Device.BeginInvokeOnMainThread(() => {
+                switch (testType)
+                {
+                    case "flexors&IMU":
+                        leftHand.Stop();
+                        DisplayAlert("Test Completed", $"The latency test of {samples} samples for test [{testType}]. \n - readingCicleCounter: {readingCicleCounter}\n writingCicleCounter: {writingCicleCounter} \n - The Test is storage in {storagePath}", "Ok");
+                        break;
+                    case "actuators":
+                        actuatorStepCounter++;
+                        Debug.WriteLine($"actuatorStepCounter: {actuatorStepCounter}");
+                        if (actuatorStepCounter == 3)
+                        {
+                            latencyTest.GenerateCSVFileForActuatorsLatencyTest();
+                        }
+                        if (actuatorStepCounter == 4)
+                        {
+                            actuatorStepCounter = 0;
+                            leftHand.Stop();
+                            DisplayAlert("Test Completed", $"The latency test of {samples} samples for test [{testType}]. \n - readingCicleCounter: {readingCicleCounter}\n writingCicleCounter: {writingCicleCounter} \n - The Test is storage in {storagePath}", "Ok");
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            });
+        }
+
+        void Handle_Toggled_LoadLatencyTestConfiguration(object sender, Xamarin.Forms.ToggledEventArgs e)
+        {
+            if(e.Value)
+            {
+                int samplesQuantity = (int)picker_SamplesQuantity.SelectedItem;
+                string componentType = (string)picker_ComponentType.SelectedItem;
+                int componentQuantity = (int)picker_ComponentQuantity.SelectedItem;
+
+                leftHand.SetLoopDelay(0);
+                leftHand.SetThreshold(0);
+                if(componentType.Equals("flexors&IMU"))
+                {
+                    leftHand.AddFlexors(flexorRegions.GetRange(0, componentQuantity), flexorPins.GetRange(0, componentQuantity));
+                    leftHand.SetIMUStatus(true);
+                }
+                if (componentType.Equals("actuators"))
+                {
+                    leftHand.AddActuators(actuatorRegions.GetRange(0, componentQuantity), actuatorPositivePins.GetRange(0, componentQuantity), actuatorNegativePins.GetRange(0, componentQuantity));
+                }
+                leftHand.SaveOpenGloveConfiguration(); //Register OpenGlove Configuration on Server
+                    
+            }
+            else
+            {
+                leftHand.ResetFlexors();
+                leftHand.ResetActuators();
+                leftHand.TurnOffIMU();
+            }
+
+        }
+
+        async void Handle_Toggled_StartResetLatencyTest(object sender, Xamarin.Forms.ToggledEventArgs e)
+        {
+            if(e.Value)
+            {
+                bool startTest = await DisplayAlert("Confirm Start Test", $"You are sure start latency test for get {picker_SamplesQuantity.SelectedItem} samples with:\n Component(s): {picker_ComponentType.SelectedItem} \n Quantity Component(s): {picker_ComponentQuantity.SelectedItem}", "Ok", "Cancel");
+                if (startTest)
+                {
+                    int samplesQuantity = (int)picker_SamplesQuantity.SelectedItem;
+                    string componentType = (string)picker_ComponentType.SelectedItem;
+                    int componentQuantity = (int)picker_ComponentQuantity.SelectedItem;
+                    string folderName = "latencyTests_CSharpAPI";
+                    string fileName = componentType + componentQuantity + "Xamarin" + "Galaxy";
+                    string fileExtension = ".csv";
+                    string columnTitle = "latencies-ns"; //nanoseconds
+
+                    if (componentType.Equals("flexors&IMU"))
+                    {
+                        latencyTest.OnLatencyTestCompleted += OnLatencyTestCompleted;
+                        latencyTest.FlexorAndIMUTest(this.leftHand, folderName, fileName + fileExtension, columnTitle, samplesQuantity, componentQuantity);
+                        leftHand.Start(); //load configuration on bluetoothDevice
+                    }
+                    if (componentType.Equals("actuators"))
+                    {
+                        latencyTest.OnLatencyTestCompleted += OnLatencyTestCompleted;
+                        leftHand.Start();
+                        latencyTest.ActuatorsTest(this.leftHand, folderName, fileName + fileExtension, columnTitle, samplesQuantity, componentQuantity, actuatorRegions.GetRange(0, componentQuantity));
+                    }
+
+                    
+                }
+                else
+                {
+                    switch_startResetLatencyTest.IsToggled = false;
+
+                }
+            }
+            else
+            {
+                latencyTest = new LatencyTest();
+                actuatorStepCounter = 0;
+                leftHand.Stop();
+            }
+        }
+
+
         void Handle_Toggled_LoadConfiguration(object sender, Xamarin.Forms.ToggledEventArgs e)
         {
             UpdateOpenGloveInUI();
             if (e.Value)
             {
                 leftHand.GetOpenGloveArduinoVersionSoftware();
-                leftHand.AddActuators(actuatorRegions, actuatorPositivePins, actuatorNegativePins);
-                leftHand.AddFlexors(flexorRegions, flexorPins);
+                leftHand.AddActuators(actuatorRegions, actuatorPositivePins.GetRange(0,5), actuatorNegativePins.GetRange(0,5));
+                leftHand.AddFlexors(flexorRegions.GetRange(0,2), flexorPins.GetRange(0,2));
+                leftHand.SetThreshold(0);
 
                 label_loadConfiguration.Text = "Loaded";
                 label_loadConfiguration.TextColor = Color.Green;
@@ -205,8 +322,6 @@ namespace C_SharpTest
                 label.TextColor = Color.Red;
             }
         }
-
-
 
     }
 }

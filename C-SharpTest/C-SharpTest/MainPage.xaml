@@ -5,7 +5,8 @@
              x:Class="C_SharpTest.MainPage">
     <ContentPage.Content>
         <ScrollView>
-            <StackLayout Orientation="Vertical" Padding="5,20,5,5">
+            <StackLayout Orientation="Vertical" Padding="5,5,5,5">
+           
                 <Label Text="OpenGlove Instance:" FontSize="Large" Margin="0,10,0,10"/>
                 
                 <Grid HorizontalOptions="CenterAndExpand">
@@ -19,7 +20,7 @@
 
                     <StackLayout Grid.Row="0" Grid.Column="0" 
                         Orientation="Vertical">
-                        <Label Text="Name: " />
+                        <Label Text="Name: "/>
                         <Label x:Name="label_Name" Text=""/>
                     </StackLayout>
                     
@@ -43,6 +44,9 @@
                 </Grid>
 
 
+
+
+
                 
                 <Label Text="Connection Management:" FontSize="Large" Margin="0,10,0,10"/>
                 
@@ -58,6 +62,47 @@
                     <Switch x:Name="switch_bluetoothStatus" Toggled="Handle_Toggled_BluetoothDeviceConnection"/>
                 </StackLayout>
 
+
+
+                
+
+                
+                
+                <Label Text="OpenGlove Latency Test: " FontSize="Large" Margin="0,10,0,10"/>
+
+                <StackLayout Orientation="Horizontal" HorizontalOptions="Fill">
+                    <Label Text="Samples Quantity:"/>
+                    <Picker x:Name="picker_SamplesQuantity" HorizontalOptions="FillAndExpand"/>
+                </StackLayout>
+
+                <StackLayout Orientation="Horizontal" HorizontalOptions="Fill">
+                    <Label Text="ComponentType: "/>
+                    <Picker x:Name="picker_ComponentType" HorizontalOptions="FillAndExpand"/>
+                </StackLayout>
+
+                <StackLayout Orientation="Horizontal" HorizontalOptions="Fill">
+                    <Label Text="ComponentQuantity: "/>
+                    <Picker x:Name="picker_ComponentQuantity" HorizontalOptions="FillAndExpand"/>
+                </StackLayout>
+
+                <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand">
+                    <Label Text="Configuration status: "/>
+                    <Label x:Name="label_latencyTestConfiguration" Text="No Loaded ..."/>
+                    <Switch x:Name="switch_loadLatencyTestConfiguration" Toggled="Handle_Toggled_LoadLatencyTestConfiguration"/>
+                </StackLayout>
+
+                <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand">
+                    <Label Text="Test Status:"/>
+                    <Label x:Name="label_latencyTestStatus" Text="Waiting ..."/>
+                    <Switch x:Name="switch_startResetLatencyTest" Toggled="Handle_Toggled_StartResetLatencyTest"/>
+                </StackLayout>
+
+
+
+
+                
+                <Label Text="Manual API test: " FontSize="Large" Margin="0,10,0,10"/>
+                
                 <StackLayout Orientation="Horizontal" HorizontalOptions="Center" >
                     <Label Text="LoadConfiguration: " HorizontalOptions="StartAndExpand" />
                     <Label x:Name="label_loadConfiguration" Text="No Loaded"/>
@@ -72,7 +117,10 @@
 
 
 
-                
+
+
+
+                        
                 <Label Text="Flexors and IMU data:" FontSize="Large" Margin="0,10,0,10"/>
                 
                 <StackLayout Orientation="Horizontal" HorizontalOptions="Center" >
@@ -97,7 +145,8 @@
 
 
 
-                
+
+                        
                 <Label Text="Actuators: " FontSize="Large" Margin="0,10,0,10"/>
                 
                 <StackLayout Orientation="Horizontal">
@@ -129,7 +178,7 @@
                     <Label x:Name="label_actuator4" Text="Deactivated"/>
                     <Switch x:Name="switch_actuator4" Toggled="Handle_Toggled_ActivateActuator4"/>
                 </StackLayout>
-            </StackLayout>     
+            </StackLayout>
         </ScrollView>
     </ContentPage.Content>   
 </ContentPage>

@@ -11,6 +11,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="OpenGloveAPI_C_Sharp_HL\" />
+    <Folder Include="IO\" />
+    <Folder Include="OpenGloveLatencyTests\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="OpenGloveAPI_C_Sharp_HL\EmptyClass.cs" />

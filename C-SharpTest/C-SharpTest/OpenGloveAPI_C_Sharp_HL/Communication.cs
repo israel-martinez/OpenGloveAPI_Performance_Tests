@@ -11,36 +11,43 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
         public WebSocket WebSocket { get; set; }
         public MessageGenerator MessageGenerator { get; set; }
         public string BluetoothDeviceName { get; set; }
+        public string ConfigurationName { get; set; }
         private bool _IsConnectedToBluetoothDevice { get; set; }
 
-
+        public delegate void ActivateActuatorsTimeTestOnServer(long nanoSeconds);
+        public delegate void ActivateActuatorsTimeTestOnArduino(long microSeconds);
         public delegate void FlexorMovement(int region, int value);
         public delegate void AccelerometerValues(float ax, float ay, float az);
         public delegate void GyroscopeValues(float gx, float gy, float gz);
         public delegate void MagnometerValues(float mx, float my, float mz);
         public delegate void AllIMUValues(float ax, float ay, float az, float gx, float gy, float gz, float mx, float my, float mz);
-        public delegate void BluetoothDeviceState(bool isConnected);
+        public delegate void BluetoothDeviceConnectionState(bool isConnected);
+        public delegate void WebSocketConnectionState(bool isConnected);
         public delegate void InfoMessage(string message);
 
+        public event ActivateActuatorsTimeTestOnServer OnActivateActuatorsTimeTestOnServerReceived;
+        public event ActivateActuatorsTimeTestOnArduino OnActivateActuatorsTimeTestOnArduinoReceived;
         public event FlexorMovement OnFlexorValueReceived;
         public event AccelerometerValues OnAccelerometerValuesReceived;
         public event GyroscopeValues OnGyroscopeValuesReceived;
         public event MagnometerValues OnMagnometerValuesReceived;
         public event AllIMUValues OnAllIMUValuesReceived;
-        public event BluetoothDeviceState OnBluetoothDeviceStateChanged;
+        public event BluetoothDeviceConnectionState OnBluetoothDeviceConnectionStateChanged;
+        public event WebSocketConnectionState OnWebSocketConnectionStateChangued;
         public event InfoMessage OnInfoMessagesReceived;
 
         public bool IsConnectedToBluetoohDevice { get { return _IsConnectedToBluetoothDevice; } }
-        public Communication(string bluetoothDeviceName, string url)
+        public Communication(string bluetoothDeviceName, string configurationName, string url)
         {
-            WebSocket = new WebSocket(url);
-            WebSocket.OnOpen += OnOpen;         
-            WebSocket.OnMessage += OnMessage;
-            WebSocket.OnClose += OnClose;
-            WebSocket.OnError += OnError;
+            this.WebSocket = new WebSocket(url);
+            this.WebSocket.OnOpen += OnOpen;         
+            this.WebSocket.OnMessage += OnMessage;
+            this.WebSocket.OnClose += OnClose;
+            this.WebSocket.OnError += OnError;
 
-            _IsConnectedToBluetoothDevice = false;
-            BluetoothDeviceName = bluetoothDeviceName;
+            this._IsConnectedToBluetoothDevice = false;
+            this.BluetoothDeviceName = bluetoothDeviceName;
+            this.ConfigurationName = configurationName;
 
             MessageGenerator = new MessageGenerator(mainSeparator: ";", secondarySeparator: ",", empty: "");
         }
@@ -48,16 +55,17 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
         private void OnOpen(object sender, EventArgs e)
         {
             Debug.WriteLine($"Websocket Connected to Server!");
-            this.AddOpenGloveDeviceToServer(BluetoothDeviceName);
+            this.AddOpenGloveDeviceToServer(BluetoothDeviceName, ConfigurationName);
             Debug.WriteLine($"OpenGlove.Communication.AddOpenGloveToServer()");
             this.StartCaptureDataFromServer(BluetoothDeviceName);
             Debug.WriteLine($"Communication.StartCaptureDataFromServer()");
+            OnWebSocketConnectionStateChangued?.Invoke(this.WebSocket.IsAlive);
 
         }
 
         private void OnMessage(object sender, MessageEventArgs e)
         {
-            Debug.WriteLine($"Received from Server: {e.Data}");
+            //Debug.WriteLine($"Received from Server: {e.Data}");
             MessageHandler(e.Data);
         }
 
@@ -101,7 +109,13 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
                             OnAllIMUValuesReceived?.Invoke(float.Parse(words[1], CultureInfo.InvariantCulture), float.Parse(words[2], CultureInfo.InvariantCulture), float.Parse(words[3], CultureInfo.InvariantCulture), float.Parse(words[4], CultureInfo.InvariantCulture), float.Parse(words[5], CultureInfo.InvariantCulture), float.Parse(words[6], CultureInfo.InvariantCulture), float.Parse(words[7], CultureInfo.InvariantCulture), float.Parse(words[8], CultureInfo.InvariantCulture), float.Parse(words[9], CultureInfo.InvariantCulture));
                             break;
                         case "b":
-                            OnBluetoothDeviceStateChanged?.Invoke(bool.Parse(words[1]));
+                            OnBluetoothDeviceConnectionStateChanged?.Invoke(bool.Parse(words[1]));
+                            break;
+                        case "us":
+                            OnActivateActuatorsTimeTestOnArduinoReceived?.Invoke(long.Parse(words[1]));
+                            break;
+                        case "ns":
+                            OnActivateActuatorsTimeTestOnServerReceived?.Invoke(long.Parse(words[1]));
                             break;
                             
                         default:
@@ -127,9 +141,9 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
             Debug.WriteLine($"WebSocket Error: {e.Exception}, {e.ToString()}");
         }
 
-        public void StartOpenGlove(string bluetoothDeviceName, string configurationName)
+        public void StartOpenGlove(string bluetoothDeviceName)
         {
-            this.WebSocket.Send(MessageGenerator.StartOpenGlove(bluetoothDeviceName, configurationName));
+            this.WebSocket.Send(MessageGenerator.StartOpenGlove(bluetoothDeviceName));
         }
 
         public void StopOpenGlove(string bluetoothDeviceName)
@@ -137,9 +151,9 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
             this.WebSocket.Send(MessageGenerator.StopOpenGlove(bluetoothDeviceName));
         }
 
-        public void AddOpenGloveDeviceToServer(string bluetoothDeviceName)
+        public void AddOpenGloveDeviceToServer(string bluetoothDeviceName, string configurationName)
         {
-            this.WebSocket.Send(MessageGenerator.AddOpenGloveDeviceToServer(bluetoothDeviceName));
+            this.WebSocket.Send(MessageGenerator.AddOpenGloveDeviceToServer(bluetoothDeviceName, configurationName));
         }
 
         public void RemoveOpenGloveDeviceFromServer(string bluetoothDeviceName)
@@ -194,6 +208,11 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
         public void ActivateActuators(string bluetoothDeviceName, List<int> regions, List<string> intensities)
         {
             this.WebSocket.Send(MessageGenerator.ActivateActuators(bluetoothDeviceName, regions, intensities));
+        }
+
+        public void ActivateActuatorsTimeTest(string bluetoothDeviceName, List<int> regions, List<string> intensities)
+        {
+            this.WebSocket.Send(MessageGenerator.ActivateActuatorsTimeTest(bluetoothDeviceName, regions, intensities));
         }
 
         public void TurnOnActuators(string bluetoothDeviceName)
@@ -286,6 +305,16 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
             this.WebSocket.Send(MessageGenerator.CalibrateIMU(bluetoothDeviceName));
         }
 
+        public void TurnOnIMU(string bluetoohDeviceName)
+        {
+            this.WebSocket.Send(MessageGenerator.TurnOnIMU(bluetoohDeviceName));
+        }
+
+        public void TurnOffIMU(string bluetoothDeviceName)
+        {
+            this.WebSocket.Send(MessageGenerator.TurnOffIMU(bluetoothDeviceName));
+        }
+
         public void SetLoopDelay(string bluetoothDeviceName, int value)
         {
             this.WebSocket.Send(MessageGenerator.SetLoopDelay(bluetoothDeviceName, value));
@@ -294,11 +323,13 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
         public void ConnectToWebSocketServer()
         {
             this.WebSocket.Connect();
+            OnWebSocketConnectionStateChangued?.Invoke(this.WebSocket.IsAlive);
         }
 
         public void DisconnectFromWebSocketServer()
         {
             this.WebSocket.Close();
+            OnWebSocketConnectionStateChangued?.Invoke(this.WebSocket.IsAlive);
         }
 
         public void GetOpenGloveArduinoVersionSoftware(string bluetoothDeviceName)
