@@ -19,7 +19,7 @@ namespace C_SharpTest
         List<int> actuatorPositivePins = new List<int> { 11, 10, 9, 3, 6 };
         List<int> actuatorNegativePins = new List<int> { 12, 15, 16, 2, 8 };
 
-        public static LatencyTest latencyTest = new LatencyTest();
+        public LatencyTest latencyTest;
         public volatile int actuatorStepCounter = 0;
 
         List<int> samplesQuantityList = new List<int> { 100, 1000, 2000, 5000, 10000 };
@@ -44,11 +44,20 @@ namespace C_SharpTest
             leftHand.Communication.OnFlexorValueReceived+= OnFlexorFunction;
             leftHand.Communication.OnInfoMessagesReceived += OnInfoMessage;
             leftHand.Communication.OnBluetoothDeviceConnectionStateChanged += OnBluetoothDeviceConnectionStateChanged;
+            leftHand.Communication.OnWebSocketConnectionStateChangued += OnWebSocketConnectionStateChangued;
 
             // For latency Tests
             picker_SamplesQuantity.ItemsSource = samplesQuantityList;
             picker_ComponentType.ItemsSource = componentTypeList;
             picker_ComponentQuantity.ItemsSource = componentQuantityList;
+        }
+
+        public void OnWebSocketConnectionStateChangued(bool isConnected)
+        {
+            Device.BeginInvokeOnMainThread(() => {
+                label_webSocketStatus.Text = isConnected ? "Connected" : "Disconnected";
+                label_webSocketStatus.TextColor = isConnected ? Color.Green : Color.Red;
+            });
         }
 
         public void OnBluetoothDeviceConnectionStateChanged(bool isConnected)
@@ -104,14 +113,14 @@ namespace C_SharpTest
             if(e.Value)
             {
                 leftHand.ConnectToWebSocketServer();
-                label_webSocketStatus.Text = "Connected";
-                label_webSocketStatus.TextColor = Color.Green;
+                label_webSocketStatus.Text = "Conecting";
+                label_webSocketStatus.TextColor = Color.Gray;
             }
             else
             {
                 leftHand.DisconnectFromWebSocketServer();
-                label_webSocketStatus.Text = "Disconnected";
-                label_webSocketStatus.TextColor = Color.Red;
+                label_webSocketStatus.Text = "Disconnecting";
+                label_webSocketStatus.TextColor = Color.Gray;
             }
         }
 
@@ -139,6 +148,7 @@ namespace C_SharpTest
                 {
                     case "flexors&IMU":
                         leftHand.Stop();
+                        latencyTest.RemoveFlexorsAndIMUEvents();
                         DisplayAlert("Test Completed", $"The latency test of {samples} samples for test [{testType}]. \n - readingCicleCounter: {readingCicleCounter}\n writingCicleCounter: {writingCicleCounter} \n - The Test is storage in {storagePath}", "Ok");
                         break;
                     case "actuators":
@@ -151,6 +161,7 @@ namespace C_SharpTest
                         if (actuatorStepCounter == 4)
                         {
                             actuatorStepCounter = 0;
+                            latencyTest.RemoveActuatorsEvents();
                             leftHand.Stop();
                             DisplayAlert("Test Completed", $"The latency test of {samples} samples for test [{testType}]. \n - readingCicleCounter: {readingCicleCounter}\n writingCicleCounter: {writingCicleCounter} \n - The Test is storage in {storagePath}", "Ok");
                         }
@@ -199,6 +210,7 @@ namespace C_SharpTest
                 bool startTest = await DisplayAlert("Confirm Start Test", $"You are sure start latency test for get {picker_SamplesQuantity.SelectedItem} samples with:\n Component(s): {picker_ComponentType.SelectedItem} \n Quantity Component(s): {picker_ComponentQuantity.SelectedItem}", "Ok", "Cancel");
                 if (startTest)
                 {
+                    latencyTest = new LatencyTest();
                     int samplesQuantity = (int)picker_SamplesQuantity.SelectedItem;
                     string componentType = (string)picker_ComponentType.SelectedItem;
                     int componentQuantity = (int)picker_ComponentQuantity.SelectedItem;
@@ -217,10 +229,8 @@ namespace C_SharpTest
                     {
                         latencyTest.OnLatencyTestCompleted += OnLatencyTestCompleted;
                         leftHand.Start();
-                        latencyTest.ActuatorsTest(this.leftHand, folderName, fileName + fileExtension, columnTitle, samplesQuantity, componentQuantity, actuatorRegions.GetRange(0, componentQuantity));
+                        latencyTest.ActuatorsTest2(this.leftHand, folderName, fileName + fileExtension, columnTitle, samplesQuantity, componentQuantity, actuatorRegions.GetRange(0, componentQuantity));
                     }
-
-                    
                 }
                 else
                 {
@@ -230,7 +240,7 @@ namespace C_SharpTest
             }
             else
             {
-                latencyTest = new LatencyTest();
+                latencyTest.OnLatencyTestCompleted -= OnLatencyTestCompleted;
                 actuatorStepCounter = 0;
                 leftHand.Stop();
             }

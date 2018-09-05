@@ -65,7 +65,7 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
 
         private void OnMessage(object sender, MessageEventArgs e)
         {
-            //Debug.WriteLine($"Received from Server: {e.Data}");
+            Debug.WriteLine($"Received from Server: {e.Data}");
             MessageHandler(e.Data);
         }
 
@@ -126,7 +126,7 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
                 }
                 catch
                 {
-                    Console.WriteLine("ERROR: BAD FORMAT");
+                    Debug.WriteLine($"ERROR: BAD FORMAT on Communication.MessageHandler [message: {message}]");
                 }
             }
         }
@@ -143,181 +143,217 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
 
         public void StartOpenGlove(string bluetoothDeviceName)
         {
-            this.WebSocket.Send(MessageGenerator.StartOpenGlove(bluetoothDeviceName));
+            if (this.WebSocket.IsAlive) 
+                this.WebSocket.Send(MessageGenerator.StartOpenGlove(bluetoothDeviceName));
         }
 
         public void StopOpenGlove(string bluetoothDeviceName)
         {
-            this.WebSocket.Send(MessageGenerator.StopOpenGlove(bluetoothDeviceName));
+            if (this.WebSocket.IsAlive)
+                this.WebSocket.Send(MessageGenerator.StopOpenGlove(bluetoothDeviceName));
         }
 
         public void AddOpenGloveDeviceToServer(string bluetoothDeviceName, string configurationName)
         {
-            this.WebSocket.Send(MessageGenerator.AddOpenGloveDeviceToServer(bluetoothDeviceName, configurationName));
+            if (this.WebSocket.IsAlive) 
+                this.WebSocket.Send(MessageGenerator.AddOpenGloveDeviceToServer(bluetoothDeviceName, configurationName));
         }
 
         public void RemoveOpenGloveDeviceFromServer(string bluetoothDeviceName)
         {
-            this.WebSocket.Send(MessageGenerator.RemoveOpenGloveDeviceFromServer(bluetoothDeviceName));
+            if (this.WebSocket.IsAlive)
+                this.WebSocket.Send(MessageGenerator.RemoveOpenGloveDeviceFromServer(bluetoothDeviceName));
         }
         public void SaveOpenGloveConfiguration(string bluetoothDeviceName, string configurationName)
         {
-            this.WebSocket.Send(MessageGenerator.SaveOpenGloveConfiguration(bluetoothDeviceName, configurationName));
+            if (this.WebSocket.IsAlive) 
+                this.WebSocket.Send(MessageGenerator.SaveOpenGloveConfiguration(bluetoothDeviceName, configurationName));
         }
 
         public void ConnectToBluetoothDevice(string bluetoothDeviceName)
         {
-            this.WebSocket.Send(MessageGenerator.ConnectToBluetoothDevice(bluetoothDeviceName));
+            if (this.WebSocket.IsAlive) 
+                this.WebSocket.Send(MessageGenerator.ConnectToBluetoothDevice(bluetoothDeviceName));
         }
 
         public void DisconnectFromBluetoothDevice(string bluetoothDeviceName)
         {
-            this.WebSocket.Send(MessageGenerator.DisconnectFromBluetoothDevice(bluetoothDeviceName));
+            if (this.WebSocket.IsAlive) 
+                this.WebSocket.Send(MessageGenerator.DisconnectFromBluetoothDevice(bluetoothDeviceName));
         }
 
         public void StartCaptureDataFromServer(string bluetoothDeviceName)
         {
-            this.WebSocket.Send(MessageGenerator.StartCaptureDataFromServer(bluetoothDeviceName));
+            if (this.WebSocket.IsAlive) 
+                this.WebSocket.Send(MessageGenerator.StartCaptureDataFromServer(bluetoothDeviceName));
         }
 
         public void StopCaptureDataFromServer(string bluetoothDeviceName)
         {
-            this.WebSocket.Send(MessageGenerator.StopCaptureDataFromServer(bluetoothDeviceName));
+            if (this.WebSocket.IsAlive) 
+                this.WebSocket.Send(MessageGenerator.StopCaptureDataFromServer(bluetoothDeviceName));
         }
 
         public void AddActuator(string bluetoothDeviceName, int region, int positivePin, int negativePin)
         {
-            this.WebSocket.Send(MessageGenerator.AddActuator(bluetoothDeviceName, region, positivePin, negativePin));
+            if (this.WebSocket.IsAlive) 
+                this.WebSocket.Send(MessageGenerator.AddActuator(bluetoothDeviceName, region, positivePin, negativePin));
         }
 
         public void AddActuators(string bluetoothDeviceName, List<int> regions, List<int> positivePins, List<int> negativePins)
         {
-            this.WebSocket.Send(MessageGenerator.AddActuators(bluetoothDeviceName, regions, positivePins, negativePins));
+            if (this.WebSocket.IsAlive) 
+                this.WebSocket.Send(MessageGenerator.AddActuators(bluetoothDeviceName, regions, positivePins, negativePins));
         }
 
         public void RemoveActuator(string bluetoothDeviceName, int region)
         {
-            this.WebSocket.Send(MessageGenerator.RemoveActuator(bluetoothDeviceName, region));
+            if (this.WebSocket.IsAlive) 
+                this.WebSocket.Send(MessageGenerator.RemoveActuator(bluetoothDeviceName, region));
         }
 
         public void RemoveActuators(string bluetoothDeviceName, List<int> regions)
         {
-            this.WebSocket.Send(MessageGenerator.RemoveActuators(bluetoothDeviceName, regions));
+            if (this.WebSocket.IsAlive) 
+                this.WebSocket.Send(MessageGenerator.RemoveActuators(bluetoothDeviceName, regions));
         }
 
         public void ActivateActuators(string bluetoothDeviceName, List<int> regions, List<string> intensities)
         {
-            this.WebSocket.Send(MessageGenerator.ActivateActuators(bluetoothDeviceName, regions, intensities));
+            if (this.WebSocket.IsAlive) 
+                this.WebSocket.Send(MessageGenerator.ActivateActuators(bluetoothDeviceName, regions, intensities));
         }
 
         public void ActivateActuatorsTimeTest(string bluetoothDeviceName, List<int> regions, List<string> intensities)
         {
-            this.WebSocket.Send(MessageGenerator.ActivateActuatorsTimeTest(bluetoothDeviceName, regions, intensities));
+            if (this.WebSocket.IsAlive) 
+                this.WebSocket.Send(MessageGenerator.ActivateActuatorsTimeTest(bluetoothDeviceName, regions, intensities));
         }
 
         public void TurnOnActuators(string bluetoothDeviceName)
         {
-            this.WebSocket.Send(MessageGenerator.TurnOnActuators(bluetoothDeviceName));
+            if (this.WebSocket.IsAlive) 
+                this.WebSocket.Send(MessageGenerator.TurnOnActuators(bluetoothDeviceName));
         }
 
         public void TurnOffActuators(string bluetoothDeviceName)
         {
-            this.WebSocket.Send(MessageGenerator.TurnOffActuators(bluetoothDeviceName));
+            if (this.WebSocket.IsAlive) 
+                this.WebSocket.Send(MessageGenerator.TurnOffActuators(bluetoothDeviceName));
         }
 
         public void ResetActuators(string bluetoothDeviceName)
         {
-            this.WebSocket.Send(MessageGenerator.ResetActuators(bluetoothDeviceName));
+            if (this.WebSocket.IsAlive) 
+                this.WebSocket.Send(MessageGenerator.ResetActuators(bluetoothDeviceName));
         }
 
         public void AddFlexor(string bluetoothDeviceName, int region, int pin)
         {
-            this.WebSocket.Send(MessageGenerator.AddFlexor(bluetoothDeviceName, region, pin));
+            if (this.WebSocket.IsAlive) 
+                this.WebSocket.Send(MessageGenerator.AddFlexor(bluetoothDeviceName, region, pin));
         }
 
         public void AddFlexors(string bluetoothDeviceName, List<int> regions, List<int> pins)
         {
-            this.WebSocket.Send(MessageGenerator.AddFlexors(bluetoothDeviceName, regions, pins));
+            if (this.WebSocket.IsAlive) 
+                this.WebSocket.Send(MessageGenerator.AddFlexors(bluetoothDeviceName, regions, pins));
         }
 
         public void RemoveFlexor(string bluetoothDeviceName, int region)
         {
-            this.WebSocket.Send(MessageGenerator.RemoveFlexor(bluetoothDeviceName, region));
+            if (this.WebSocket.IsAlive) 
+                this.WebSocket.Send(MessageGenerator.RemoveFlexor(bluetoothDeviceName, region));
         }
 
         public void RemoveFlexors(string bluetoothDeviceName, List<int> regions)
         {
-            this.WebSocket.Send(MessageGenerator.RemoveFlexors(bluetoothDeviceName, regions));
+            if (this.WebSocket.IsAlive)
+                this.WebSocket.Send(MessageGenerator.RemoveFlexors(bluetoothDeviceName, regions));
         }
 
         public void CalibrateFlexors(string bluetoothDeviceName)
         {
-            this.WebSocket.Send(MessageGenerator.CalibrateFlexors(bluetoothDeviceName));
+            if (this.WebSocket.IsAlive)
+                this.WebSocket.Send(MessageGenerator.CalibrateFlexors(bluetoothDeviceName));
         }
 
         public void ConfirmCalibration(string bluetoothDeviceName)
         {
-            this.WebSocket.Send(MessageGenerator.ConfirmCalibration(bluetoothDeviceName));
+            if (this.WebSocket.IsAlive)
+                this.WebSocket.Send(MessageGenerator.ConfirmCalibration(bluetoothDeviceName));
         }
 
         public void SetThreshold(string bluetoothDeviceName, int value)
         {
-            this.WebSocket.Send(MessageGenerator.SetThreshold(bluetoothDeviceName, value));
+            if (this.WebSocket.IsAlive)
+                this.WebSocket.Send(MessageGenerator.SetThreshold(bluetoothDeviceName, value));
         }
 
         public void TurnOnFlexors(string bluetoothDeviceName)
         {
-            this.WebSocket.Send(MessageGenerator.TurnOnFlexors(bluetoothDeviceName));
+            if (this.WebSocket.IsAlive)
+                this.WebSocket.Send(MessageGenerator.TurnOnFlexors(bluetoothDeviceName));
         }
 
         public void TurnOffFlexors(string bluetoothDeviceName)
         {
-            this.WebSocket.Send(MessageGenerator.TurnOffFlexors(bluetoothDeviceName));
+            if (this.WebSocket.IsAlive)
+                this.WebSocket.Send(MessageGenerator.TurnOffFlexors(bluetoothDeviceName));
         }
 
         public void ResetFlexors(string bluetoothDeviceName)
         {
-            this.WebSocket.Send(MessageGenerator.ResetFlexors(bluetoothDeviceName));
+            if (this.WebSocket.IsAlive)
+                this.WebSocket.Send(MessageGenerator.ResetFlexors(bluetoothDeviceName));
         }
 
         public void StartIMU(string bluetoothDeviceName)
         {
-            this.WebSocket.Send(MessageGenerator.StartIMU(bluetoothDeviceName));
+            if (this.WebSocket.IsAlive)
+                this.WebSocket.Send(MessageGenerator.StartIMU(bluetoothDeviceName));
         }
 
         public void SetIMUStatus(string bluetoothDeviceName, bool status)
         {
-            this.WebSocket.Send(MessageGenerator.SetIMUStatus(bluetoothDeviceName, status));
+            if (this.WebSocket.IsAlive)
+                this.WebSocket.Send(MessageGenerator.SetIMUStatus(bluetoothDeviceName, status));
         }
 
         public void SetRawData(string bluetoothDeviceName, bool status)
         {
-            this.WebSocket.Send(MessageGenerator.SetRawData(bluetoothDeviceName, status));
+            if (this.WebSocket.IsAlive) 
+                this.WebSocket.Send(MessageGenerator.SetRawData(bluetoothDeviceName, status));
         }
 
         public void SetIMUChoosingData(string bluetoothDeviceName, int value)
         {
-            this.WebSocket.Send(MessageGenerator.SetIMUChoosingData(bluetoothDeviceName, value));
+            if (this.WebSocket.IsAlive) 
+                this.WebSocket.Send(MessageGenerator.SetIMUChoosingData(bluetoothDeviceName, value));
         }
 
         public void CalibrateIMU(string bluetoothDeviceName)
         {
-            this.WebSocket.Send(MessageGenerator.CalibrateIMU(bluetoothDeviceName));
+            if (this.WebSocket.IsAlive) 
+                this.WebSocket.Send(MessageGenerator.CalibrateIMU(bluetoothDeviceName));
         }
 
         public void TurnOnIMU(string bluetoohDeviceName)
         {
-            this.WebSocket.Send(MessageGenerator.TurnOnIMU(bluetoohDeviceName));
+            if (this.WebSocket.IsAlive) 
+                this.WebSocket.Send(MessageGenerator.TurnOnIMU(bluetoohDeviceName));
         }
 
         public void TurnOffIMU(string bluetoothDeviceName)
         {
-            this.WebSocket.Send(MessageGenerator.TurnOffIMU(bluetoothDeviceName));
+            if (this.WebSocket.IsAlive) 
+                this.WebSocket.Send(MessageGenerator.TurnOffIMU(bluetoothDeviceName));
         }
 
         public void SetLoopDelay(string bluetoothDeviceName, int value)
         {
-            this.WebSocket.Send(MessageGenerator.SetLoopDelay(bluetoothDeviceName, value));
+            if (this.WebSocket.IsAlive) 
+                this.WebSocket.Send(MessageGenerator.SetLoopDelay(bluetoothDeviceName, value));
         }
 
         public void ConnectToWebSocketServer()
@@ -334,7 +370,8 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
 
         public void GetOpenGloveArduinoVersionSoftware(string bluetoothDeviceName)
         {
-            this.WebSocket.Send(MessageGenerator.GetOpenGloveArduinoVersionSoftware(bluetoothDeviceName));
+            if (this.WebSocket.IsAlive)
+                this.WebSocket.Send(MessageGenerator.GetOpenGloveArduinoVersionSoftware(bluetoothDeviceName));
         }
     }
 }
