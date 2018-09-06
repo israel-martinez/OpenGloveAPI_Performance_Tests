@@ -54,8 +54,7 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
             TurnOffIMU,
 
             SetLoopDelay = 42,
-
-            GetOpenGloveArduinoSoftwareVersion = 99,
+            GetOpenGloveArduinoSoftwareVersion,
         }
         public string MainSeparator { get; set; }
         public string SecondarySeparator { get; set; }

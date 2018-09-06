@@ -1,3 +1,70 @@
 <resources>
     <string name="app_name">JavaTest</string>
+    <string name="textView_TitleOpenGloveInstance">"OpenGlove Instance: "</string>
+    <string name="textView_TitleConnectionManagement">"Connection Management: "</string>
+    <string name="textView_TitleOpenGloveLatencyTest">"OpenGlove Latency Test: "</string>
+    <string name="textView_TitleOpenGloveManualAPITest">"Manual API Test: "</string>
+    <string name="textView_TitleOpenGloveFlexorsAndIMUData">"Flexors and IMU data: "</string>
+    <string name="textView_TitleOpenGloveActuators">"Actuators: "</string>
+
+    <string name="textView_SwitchWebSocketStatus">"WebSocket Status: "</string>
+    <string name="textView_SwitchBluetoothDeviceStatus">"BluetoothDevice Status: "</string>
+    <string name="textView_SwitchConfigurationStatus">"Configuration Status: "</string>
+    <string name="textView_SwitchLatencyTestStatus">"Test Status: "</string>
+
+    <string name="textView_Empty">"---"</string>
+    <string name="textView_zero">"0 "</string>
+    <string name="textView_TotalOfMessageReceived">"Total of Message received: "</string>
+    <string name="textView_OnMessage">"OnMessage: "</string>
+    <string name="textView_OnFlexor">"OnFlexor: "</string>
+    <string name="textView_OnIMU">"OnIMU: "</string>
+    <string name="textView_SwitchActuatorStatus">"Actuator Status: "</string>
+    <string name="textView_SwitchActuatorsStatus">"Actuators Status: "</string>
+
+    <string name="switch_StatusOn">"On "</string>
+    <string name="switch_StatusOff">"Off "</string>
+    <string name="switch_StatusActivated">"Activated "</string>
+    <string name="switch_StatusDeactivated">"Deactivated "</string>
+    <string name="switch_StatusConnecting">"Connecting "</string>
+    <string name="switch_StatusConnected">"Connected " </string>
+    <string name="switch_StatusDisconnected">"Disconnected "</string>
+    <string name="switch_StatusWaiting">"Waiting "</string>
+    <string name="switch_StatusLoading">"Loading "</string>
+    <string name="switch_StatusLoaded">"Loaded " </string>
+    <string name="switch_StatusReseted">"Reseted "</string>
+    <string name="switch_StatusUnLoaded">"Unloaded "</string>
+    <string name="switch_StatusStarted">"Started "</string>
+    <string name="switch_StatusStopped">"Stopped "</string>
+
+    <string name="textView_SpinnerSamplesQuantity">"Samples Quantity: "</string>
+    <string name="textView_SpinnerComponentType">"Component Type: "</string>
+    <string name="textView_SpinnerComponentQuantity">"Component Quantity: "</string>
+
+
+    <string-array name="samples_quantity">
+        <item>100</item>
+        <item>1000</item>
+        <item>2000</item>
+        <item>5000</item>
+        <item>10000</item>
+    </string-array>
+
+    <string-array name="component_type">
+        <item>"actuators"</item>
+        <item>"flexors&amp;IMU"</item>
+    </string-array>
+
+    <string-array name="component_quantity">
+        <item>1</item>
+        <item>2</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
 </resources>

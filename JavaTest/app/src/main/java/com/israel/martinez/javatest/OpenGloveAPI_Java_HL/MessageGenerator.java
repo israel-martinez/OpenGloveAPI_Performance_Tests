@@ -64,8 +64,7 @@ public class MessageGenerator {
         TurnOffIMU,
 
         SetLoopDelay, // 42
-
-        GetOpenGloveArduinoSoftwareVersion, // 99
+        GetOpenGloveArduinoSoftwareVersion,
     }
 
     public MessageGenerator(String mainSeparator, String secondarySeparator, String empty)
@@ -84,7 +83,8 @@ public class MessageGenerator {
     */
 
 
-    public static String JoinListIntegers(String separator, List<Integer> list){
+    public static String JoinListIntegers(String separator, List<Integer> list)
+    {
         List<String> stringsList = new ArrayList<>();
         for (Integer number : list){
             stringsList.add(String.valueOf(number));
@@ -92,11 +92,13 @@ public class MessageGenerator {
         return TextUtils.join(separator, stringsList);
     }
 
-    public static String JoinList(String separator, List<String> list){
+    public static String JoinList(String separator, List<String> list)
+    {
         return TextUtils.join(separator, list);
     }
 
-    public static String Join(String separator, CharSequence ... elements){
+    public static String Join(String separator, CharSequence ... elements)
+    {
         return TextUtils.join(separator, elements);
     }
 

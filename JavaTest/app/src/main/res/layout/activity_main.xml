@@ -4,15 +4,330 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="10dp"
     tools:context="com.israel.martinez.javatest.MainActivity">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/textView_TitleOpenGloveInstance"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="@string/textView_TitleOpenGloveInstance"
+        android:textSize="20sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+    <TextView
+        android:id="@+id/textView_TitleConnectionManagement"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/textView_TitleConnectionManagement"
+        android:textSize="20sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/textView_TitleOpenGloveInstance"/>
+
+    <LinearLayout
+        android:id="@+id/linearLayout_SwitchWebsSocketStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textView_TitleConnectionManagement">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/textView_SwitchWebSocketStatus"/>
+        <Switch
+            android:id="@+id/switch_WebSocketStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/switch_StatusDisconnected"
+            android:textOn="@string/switch_StatusConnected"
+            android:textOff="@string/switch_StatusDisconnected"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout_SwitchBluetoothDevice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout_SwitchWebsSocketStatus">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/textView_SwitchBluetoothDeviceStatus"/>
+        <Switch
+            android:id="@+id/switch_BluetoothDeviceStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/switch_StatusDisconnected"
+            android:textOn="@string/switch_StatusConnected"
+            android:textOff="@string/switch_StatusDisconnected"
+            />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView_TitleOpenGloveLatencyTest"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/textView_TitleOpenGloveLatencyTest"
+        android:textSize="20sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout_SwitchBluetoothDevice"/>
+
+
+    <LinearLayout
+        android:id="@+id/linearLayout_SpinnerSamplesQuantity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView_TitleOpenGloveLatencyTest">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/textView_SpinnerSamplesQuantity"/>
+        <Spinner
+            android:id="@+id/spinner_SamplesQuantity"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/linearLayout_SpinnerComponentType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout_SpinnerSamplesQuantity">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/textView_SpinnerSamplesQuantity"/>
+        <Spinner
+            android:id="@+id/spinner_ComponentType"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/linearLayout_SpinnerComponentQuantity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout_SpinnerComponentType">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/textView_SpinnerComponentQuantity"/>
+        <Spinner
+            android:id="@+id/spinner_ComponentsQuantity"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout_SwitchConfigurationStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout_SpinnerComponentQuantity">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/textView_SwitchConfigurationStatus"/>
+        <Switch
+            android:id="@+id/switch_ConfigurationStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/switch_StatusWaiting"
+            android:textOn="@string/switch_StatusLoaded"
+            android:textOff="@string/switch_StatusUnLoaded"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout_SwitchLatencyTestStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout_SwitchConfigurationStatus">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/textView_SwitchLatencyTestStatus"/>
+        <Switch
+            android:id="@+id/switch_LatencyTestStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/switch_StatusWaiting"
+            android:textOn="@string/switch_StatusStarted"
+            android:textOff="@string/switch_StatusStopped"
+            />
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/textView_TitleOpenGloveManualAPITest"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/textView_TitleOpenGloveManualAPITest"
+        android:textSize="20sp"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout_SwitchLatencyTestStatus"/>
+
+
+    <TextView
+        android:id="@+id/textView_TitleOpenGloveActuators"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/textView_TitleOpenGloveActuators"
+        android:textSize="20sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textView_TitleOpenGloveManualAPITest"/>
+
+    <LinearLayout
+        android:id="@+id/linearLayout_SwitchTurnOnOffActuators"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView_TitleOpenGloveActuators">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/textView_SwitchActuatorsStatus"/>
+        <Switch
+            android:id="@+id/switch_TurnOnOffActuators"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/switch_StatusDeactivated"
+            android:textOn="@string/switch_StatusActivated"
+            android:textOff="@string/switch_StatusDeactivated"
+            />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView_TitleOpenGloveFlexorsAndIMUData"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/textView_TitleOpenGloveFlexorsAndIMUData"
+        android:textSize="20sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout_SwitchTurnOnOffActuators"/>
+
+    <LinearLayout
+        android:id="@+id/linearLayout_TotalOfMessageReceived"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView_TitleOpenGloveFlexorsAndIMUData">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/textView_TotalOfMessageReceived"/>
+        <TextView
+            android:id="@+id/textView_TotalOfMessageReceived"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/textView_zero"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout_OnMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout_TotalOfMessageReceived">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/textView_OnMessage"/>
+        <TextView
+            android:id="@+id/textView_OnMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/textView_Empty"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout_OnFlexor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout_OnMessage">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/textView_OnFlexor"/>
+        <TextView
+            android:id="@+id/textView_OnFlexor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/textView_Empty"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout_OnIMU"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout_OnFlexor">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/textView_OnIMU"/>
+        <TextView
+            android:id="@+id/textView_OnIMU"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/textView_Empty"/>
+    </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

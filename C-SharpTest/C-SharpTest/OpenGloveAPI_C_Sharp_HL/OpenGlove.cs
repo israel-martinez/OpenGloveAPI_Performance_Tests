@@ -14,7 +14,6 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
         private bool _IsConnectedToBluetoothDevice { get; set; }
         public bool IsConnectedToWebSocketServer { get { return _IsConnectedToWebSocketServer; } }
         public bool IsConnectedToBluetoohDevice { get { return _IsConnectedToBluetoothDevice; } }
-        // TODO Need add data listener (flexors and IMU data ) EventHandlers ... for get subscribers in OnMessage of WebSocket ...
 
 
         public OpenGlove(string name, string bluetoothDeviceName, string configurationName, string webSocketEndPointUrl)
@@ -31,7 +30,7 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
             this._IsConnectedToBluetoothDevice = isConnected;
         }
 
-        //Modify for diferent validation of IsConnected to websocket server in other lenguages of programing and libraries
+        //Modify for different validation of IsConnected to WebSocket server in other languages of programing and libraries
         private bool IsWebSocketConnected()
         {
             if (this.Communication.WebSocket.ReadyState == WebSocketSharp.WebSocketState.Open)

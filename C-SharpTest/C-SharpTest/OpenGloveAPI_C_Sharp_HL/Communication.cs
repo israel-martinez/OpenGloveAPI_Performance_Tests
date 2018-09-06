@@ -12,7 +12,6 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
         public MessageGenerator MessageGenerator { get; set; }
         public string BluetoothDeviceName { get; set; }
         public string ConfigurationName { get; set; }
-        private bool _IsConnectedToBluetoothDevice { get; set; }
 
         public delegate void ActivateActuatorsTimeTestOnServer(long nanoSeconds);
         public delegate void ActivateActuatorsTimeTestOnArduino(long microSeconds);
@@ -36,7 +35,6 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
         public event WebSocketConnectionState OnWebSocketConnectionStateChangued;
         public event InfoMessage OnInfoMessagesReceived;
 
-        public bool IsConnectedToBluetoohDevice { get { return _IsConnectedToBluetoothDevice; } }
         public Communication(string bluetoothDeviceName, string configurationName, string url)
         {
             this.WebSocket = new WebSocket(url);
@@ -45,7 +43,7 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
             this.WebSocket.OnClose += OnClose;
             this.WebSocket.OnError += OnError;
 
-            this._IsConnectedToBluetoothDevice = false;
+            //this._IsConnectedToBluetoothDevice = false;
             this.BluetoothDeviceName = bluetoothDeviceName;
             this.ConfigurationName = configurationName;
 
