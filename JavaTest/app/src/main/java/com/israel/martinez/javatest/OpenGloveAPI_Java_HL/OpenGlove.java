@@ -1,5 +1,7 @@
 package com.israel.martinez.javatest.OpenGloveAPI_Java_HL;
 
+import android.bluetooth.BluetoothSocket;
+
 import java.net.URI;
 import java.util.List;
 
@@ -8,15 +10,13 @@ import java.util.List;
  */
 
 public class OpenGlove {
-    public String Name;
-    public String BluetoothDeviceName;
-    public String ConfigurationName;
-    public URI WebSocketEndpointUrl;
+    private String Name;
+    private String BluetoothDeviceName;
+    private String ConfigurationName;
+    private URI WebSocketEndpointUrl;
     public Communication Communication;
-    private boolean _IsConnectedToWebSocketServer;
-    private boolean _IsConnectedToBluetoothDevice;
-    public boolean IsConnectedToWebSocketServer;
-    public boolean IsConnectedToBluetoothDevice;
+    private boolean IsConnectedToWebSocketServer = false;
+    private boolean IsConnectedToBluetoothDevice = false;
 
 
     public OpenGlove(String name, String bluetoothDeviceName, String configurationName, URI webSocketEndPointUrl) {
@@ -30,7 +30,7 @@ public class OpenGlove {
 
     private void OnBluetoothDeviceConnectionStateChanged(boolean isConnected)
     {
-        this._IsConnectedToBluetoothDevice = isConnected;
+        this.IsConnectedToBluetoothDevice = isConnected;
     }
 
     //Modify for different validation of IsConnected to WebSocket server in other languages of programing and libraries
@@ -208,24 +208,23 @@ public class OpenGlove {
         this.Communication.SetIMUChoosingData(BluetoothDeviceName, value);
     }
 
-    public void ReadOnlyAccelerometerFromIMU()
-    {
-        this.SetIMUChoosingData(0);
+    public void ReadOnlyAccelerometerFromIMU() {
+        this.Communication.ReadOnlyAccelerometerFromIMU(BluetoothDeviceName);
     }
 
     public void ReadOnlyGyroscopeFromIMU()
     {
-        this.SetIMUChoosingData(1);
+        this.Communication.ReadOnlyGyroscopeFromIMU(BluetoothDeviceName);
     }
 
     public void ReadOnlyMagnetometerFromIMU()
     {
-        this.SetIMUChoosingData(2);
+        this.Communication.ReadOnlyMagnetometerFromIMU(BluetoothDeviceName);
     }
 
     public void ReadOnlyAttitudeFromIMU()
     {
-        this.SetIMUChoosingData(3);
+        this.Communication.ReadOnlyGyroscopeFromIMU(BluetoothDeviceName);
     }
 
     public void ReadAllDataFromIMU()
@@ -258,6 +257,7 @@ public class OpenGlove {
     public void ConnectToWebSocketServer()
     {
         Communication = new Communication(BluetoothDeviceName, ConfigurationName, WebSocketEndpointUrl);
+        Communication.setOnBluetoothDeviceConnectionStateChanged(this::OnBluetoothDeviceConnectionStateChanged);
         this.Communication.ConnectToWebSocketServer();
     }
 

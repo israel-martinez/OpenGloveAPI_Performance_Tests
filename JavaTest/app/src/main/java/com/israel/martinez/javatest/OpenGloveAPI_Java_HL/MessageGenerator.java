@@ -267,6 +267,32 @@ public class MessageGenerator {
         return Join(MainSeparator, OpenGloveActions.SetIMUChoosingData.ordinal()+"", bluetoothDeviceName, Empty, value+"", Empty);
     }
 
+    public String ReadOnlyAccelerometerFromIMU(String bluetoothDeviceName)
+    {
+        return Join(MainSeparator, OpenGloveActions.ReadOnlyAccelerometerFromIMU.ordinal()+"", bluetoothDeviceName, Empty, Empty, Empty);
+    }
+
+    public String ReadOnlyGyroscopeFromIMU(String bluetoothDeviceName)
+    {
+        return Join(MainSeparator, OpenGloveActions.ReadOnlyGyroscopeFromIMU.ordinal()+"", bluetoothDeviceName, Empty, Empty, Empty);
+    }
+
+    public String ReadOnlyMagnetometerFromIMU(String bluetoothDeviceName)
+    {
+        return Join(MainSeparator, OpenGloveActions.ReadOnlyMagnetometerFromIMU.ordinal()+"", bluetoothDeviceName, Empty, Empty, Empty);
+    }
+
+    public String ReadOnlyAttitudeFromIMU(String bluetoothDeviceName)
+    {
+        return Join(MainSeparator, OpenGloveActions.ReadOnlyAttitudeFromIMU.ordinal()+"", bluetoothDeviceName, Empty, Empty, Empty);
+    }
+
+    public String ReadAllDataFromIMU(String bluetoothDeviceName)
+    {
+        return Join(MainSeparator, OpenGloveActions.ReadAllDataFromIMU.ordinal()+"", bluetoothDeviceName, Empty, Empty, Empty);
+    }
+
+
     public String CalibrateIMU(String bluetoothDeviceName)
     {
         return Join(MainSeparator, OpenGloveActions.CalibrateIMU.ordinal()+"", bluetoothDeviceName, Empty, Empty, Empty);

@@ -191,16 +191,16 @@ namespace CSharpTest.OpenGloveLatencyTests
             this.ActuatorRegions = actuatorRegions; 
             IntensitiesTurnOn = GenerateActuatorIntensitiesList(actuatorQuantity, "255");
             IntensitiesTurnOff = GenerateActuatorIntensitiesList(actuatorQuantity, "0");
-            openGloveDevice.Communication.OnActivateActuatorsTimeTestOnArduinoReceived += this.OnActivateActuatorsTimeTestOnArduinoReceived2;
-            openGloveDevice.Communication.OnActivateActuatorsTimeTestOnServerReceived += this.OnActivateActuatorsTimeTestOnServerReceived2;
+            openGloveDevice.Communication.OnTimeTestArduinoLatencyActivateActuatorsReceived += this.OnActivateActuatorsTimeTestOnArduinoReceived2;
+            openGloveDevice.Communication.OnTimeTestServerLatencyActivateActuatorsReceived += this.OnActivateActuatorsTimeTestOnServerReceived2;
 
             ActivateActuatorsOnWebSocketClient();
         }
 
         public void RemoveActuatorsEvents()
         {
-            OpenGloveDevice.Communication.OnActivateActuatorsTimeTestOnArduinoReceived -= this.OnActivateActuatorsTimeTestOnArduinoReceived2;
-            OpenGloveDevice.Communication.OnActivateActuatorsTimeTestOnServerReceived -= this.OnActivateActuatorsTimeTestOnServerReceived2;
+            OpenGloveDevice.Communication.OnTimeTestArduinoLatencyActivateActuatorsReceived -= this.OnActivateActuatorsTimeTestOnArduinoReceived2;
+            OpenGloveDevice.Communication.OnTimeTestServerLatencyActivateActuatorsReceived -= this.OnActivateActuatorsTimeTestOnServerReceived2;
 
         }
 

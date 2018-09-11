@@ -26,6 +26,7 @@
     <string name="switch_StatusActivated">"Activated "</string>
     <string name="switch_StatusDeactivated">"Deactivated "</string>
     <string name="switch_StatusConnecting">"Connecting "</string>
+    <string name="switch_StatusDisconnecting">"Disconnecting "</string>
     <string name="switch_StatusConnected">"Connected " </string>
     <string name="switch_StatusDisconnected">"Disconnected "</string>
     <string name="switch_StatusWaiting">"Waiting "</string>

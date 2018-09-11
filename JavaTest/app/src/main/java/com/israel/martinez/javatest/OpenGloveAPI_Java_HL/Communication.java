@@ -20,15 +20,15 @@ public class Communication extends WebSocketClient{
     public String BluetoothDeviceName;
     public String ConfigurationName;
 
-    private ActivateActuatorsTimeTestOnServer OnActivateActuatorsTimeTestOnServerReceived  = null;
-    private ActivateActuatorsTimeTestOnArduino OnActivateActuatorsTimeTestOnArduinoReceived = null;
+    private TimeTestServerLatencyActivateActuatorsReceived OnTimeTestServerLatencyActivateActuatorsReceived  = null;
+    private TimeTestArduinoLatencyActivateActuatorsReceived OnTimeTestArduinoLatencyActivateActuatorsReceived = null;
     private FlexorMovement OnFlexorValueReceived  = null;
     private AccelerometerValues OnAccelerometerValuesReceived = null;
     private GyroscopeValues OnGyroscopeValuesReceived = null;
-    private MagnometerValues OnMagnometerValuesReceived = null;
+    private MagnetometerValues OnMagnetometerValuesReceived = null;
     private AllIMUValues OnAllIMUValuesReceived = null;
     private BluetoothDeviceConnectionState OnBluetoothDeviceConnectionStateChanged = null;
-    private WebSocketConnectionState OnWebSocketConnectionStateChangued = null;
+    private WebSocketConnectionState OnWebSocketConnectionStateChanged = null;
     private InfoMessage OnInfoMessagesReceived = null;
 
     public Communication(String bluetoothDeviceName, String configurationName, URI serverURI) {
@@ -41,17 +41,19 @@ public class Communication extends WebSocketClient{
 
     @Override
     public void onOpen(ServerHandshake handshakedata) {
-        send("Hello, it is me. Mario :)");
         System.out.println("new connection opened");
         this.send(MessageGenerator.AddOpenGloveDeviceToServer(BluetoothDeviceName, ConfigurationName));
         this.send(MessageGenerator.StartCaptureDataFromServer(BluetoothDeviceName));
         System.out.println("OpenGlove.Communication.AddOpenGloveToServer()");
         System.out.println("Communication.StartCaptureDataFromServer()");
+
+        if (OnWebSocketConnectionStateChanged != null) OnWebSocketConnectionStateChanged.run(this.isOpen());
     }
 
     @Override
     public void onClose(int code, String reason, boolean remote) {
         System.out.println("closed with exit code " + code + " additional info: " + reason);
+        if (OnWebSocketConnectionStateChanged != null) OnWebSocketConnectionStateChanged.run(this.isOpen());
     }
 
     @Override
@@ -72,9 +74,9 @@ public class Communication extends WebSocketClient{
 
 
     @FunctionalInterface
-    public interface ActivateActuatorsTimeTestOnServer { void run(long nanoseconds); }
+    public interface TimeTestServerLatencyActivateActuatorsReceived { void run(long nanoseconds); }
     @FunctionalInterface
-    public interface ActivateActuatorsTimeTestOnArduino { void run(long nanoseconds); }
+    public interface TimeTestArduinoLatencyActivateActuatorsReceived { void run(long nanoseconds); }
     @FunctionalInterface
     public interface FlexorMovement { void run(int mapping, int value); }
     @FunctionalInterface
@@ -82,7 +84,9 @@ public class Communication extends WebSocketClient{
     @FunctionalInterface
     public interface GyroscopeValues { void run(float gx, float gy, float gz); }
     @FunctionalInterface
-    public interface MagnometerValues { void run(float mx, float my, float mz); }
+    public interface MagnetometerValues { void run(float mx, float my, float mz); }
+    @FunctionalInterface
+    public interface AttitudeValues { void  run(float pitch, float roll, float yaw); }
     @FunctionalInterface
     public interface AllIMUValues { void run(float ax, float ay, float az, float gx, float gy, float gz, float mx, float my, float mz); }
     @FunctionalInterface
@@ -93,12 +97,12 @@ public class Communication extends WebSocketClient{
     public interface InfoMessage { void run(String message); }
 
 
-    public void setOnActivateActuatorsTimeTestOnServerReceived(ActivateActuatorsTimeTestOnServer onActivateActuatorsTimeTestOnServerReceived) {
-        OnActivateActuatorsTimeTestOnServerReceived = onActivateActuatorsTimeTestOnServerReceived;
+    public void setOnTimeTestServerLatencyActivateActuatorsReceived(TimeTestServerLatencyActivateActuatorsReceived onTimeTestServerLatencyActivateActuatorsReceived) {
+        OnTimeTestServerLatencyActivateActuatorsReceived = onTimeTestServerLatencyActivateActuatorsReceived;
     }
 
-    public void setOnActivateActuatorsTimeTestOnArduinoReceived(ActivateActuatorsTimeTestOnArduino onActivateActuatorsTimeTestOnArduinoReceived) {
-        OnActivateActuatorsTimeTestOnArduinoReceived = onActivateActuatorsTimeTestOnArduinoReceived;
+    public void setOnTimeTestArduinoLatencyActivateActuatorsReceived(TimeTestArduinoLatencyActivateActuatorsReceived onTimeTestArduinoLatencyActivateActuatorsReceived) {
+        OnTimeTestArduinoLatencyActivateActuatorsReceived = onTimeTestArduinoLatencyActivateActuatorsReceived;
     }
 
     public void setOnFlexorValueReceived(FlexorMovement onFlexorValueReceived) {
@@ -113,8 +117,8 @@ public class Communication extends WebSocketClient{
         OnGyroscopeValuesReceived = onGyroscopeValuesReceived;
     }
 
-    public void setOnMagnometerValuesReceived(MagnometerValues onMagnometerValuesReceived) {
-        OnMagnometerValuesReceived = onMagnometerValuesReceived;
+    public void setOnMagnometerValuesReceived(MagnetometerValues onMagnometerValuesReceived) {
+        OnMagnetometerValuesReceived = onMagnometerValuesReceived;
     }
 
     public void setOnAllIMUValuesReceived(AllIMUValues onAllIMUValuesReceived) {
@@ -125,8 +129,8 @@ public class Communication extends WebSocketClient{
         OnBluetoothDeviceConnectionStateChanged = onBluetoothDeviceConnectionStateChanged;
     }
 
-    public void setOnWebSocketConnectionStateChangued(WebSocketConnectionState onWebSocketConnectionStateChangued) {
-        OnWebSocketConnectionStateChangued = onWebSocketConnectionStateChangued;
+    public void setOnWebSocketConnectionStateChanged(WebSocketConnectionState onWebSocketConnectionStateChanged) {
+        OnWebSocketConnectionStateChanged = onWebSocketConnectionStateChanged;
     }
 
     public void setOnInfoMessagesReceived(InfoMessage onInfoMessagesReceived) {
@@ -170,24 +174,25 @@ public class Communication extends WebSocketClient{
                         valueX = Float.parseFloat(words[1]);
                         valueY = Float.parseFloat(words[2]);
                         valueZ = Float.parseFloat(words[3]);
-                        if (OnMagnometerValuesReceived != null)
-                            OnMagnometerValuesReceived.run(valueX, valueY, valueZ);
+                        if (OnMagnetometerValuesReceived != null)
+                            OnMagnetometerValuesReceived.run(valueX, valueY, valueZ);
                         break;
                     case "z":
                          if (OnAllIMUValuesReceived != null)
                              OnAllIMUValuesReceived.run(Float.parseFloat(words[1]), Float.parseFloat(words[2]), Float.parseFloat(words[3]), Float.parseFloat(words[4]), Float.parseFloat(words[5]), Float.parseFloat(words[6]), Float.parseFloat(words[7]), Float.parseFloat(words[8]), Float.parseFloat(words[9]));
                         break;
                     case "b":
+                        //Received "True" or "False" from WebSocketServer
                         if (OnBluetoothDeviceConnectionStateChanged != null)
-                            OnBluetoothDeviceConnectionStateChanged.run(Boolean.parseBoolean(words[1]));
+                            OnBluetoothDeviceConnectionStateChanged.run(Boolean.parseBoolean(words[1].toLowerCase()));
                         break;
                     case "us":
-                        if (OnActivateActuatorsTimeTestOnArduinoReceived != null)
-                            OnActivateActuatorsTimeTestOnArduinoReceived.run(Long.parseLong(words[1]));
+                        if (OnTimeTestArduinoLatencyActivateActuatorsReceived != null)
+                            OnTimeTestArduinoLatencyActivateActuatorsReceived.run(Long.parseLong(words[1]));
                         break;
                     case "ns":
-                        if (OnActivateActuatorsTimeTestOnServerReceived != null)
-                            OnActivateActuatorsTimeTestOnServerReceived.run(Long.parseLong(words[1]));
+                        if (OnTimeTestServerLatencyActivateActuatorsReceived!= null)
+                            OnTimeTestServerLatencyActivateActuatorsReceived.run(Long.parseLong(words[1]));
                         break;
 
                     default:
@@ -266,6 +271,7 @@ public class Communication extends WebSocketClient{
 
     public void AddActuators(String bluetoothDeviceName, List<Integer> regions, List<Integer> positivePins, List<Integer> negativePins)
     {
+        System.out.println("AddActuators: " + MessageGenerator.AddActuators(bluetoothDeviceName, regions, positivePins, negativePins) + "isOpen: "+this.isOpen());
         if (this.isOpen())
             this.send(MessageGenerator.AddActuators(bluetoothDeviceName, regions, positivePins, negativePins));
     }
@@ -320,6 +326,7 @@ public class Communication extends WebSocketClient{
 
     public void AddFlexors(String bluetoothDeviceName, List<Integer> regions, List<Integer> pins)
     {
+        System.out.println("AddFlexors: " + MessageGenerator.AddFlexors(bluetoothDeviceName, regions, pins) + "isOpen: "+this.isOpen());
         if (this.isOpen())
             this.send(MessageGenerator.AddFlexors(bluetoothDeviceName, regions, pins));
     }
@@ -380,6 +387,7 @@ public class Communication extends WebSocketClient{
 
     public void SetIMUStatus(String bluetoothDeviceName, boolean status)
     {
+        System.out.println("SetIMUStatus: " + MessageGenerator.SetIMUStatus(bluetoothDeviceName, status) + "isOpen: "+this.isOpen());
         if (this.isOpen())
             this.send(MessageGenerator.SetIMUStatus(bluetoothDeviceName, status));
     }
@@ -394,6 +402,36 @@ public class Communication extends WebSocketClient{
     {
         if (this.isOpen())
             this.send(MessageGenerator.SetIMUChoosingData(bluetoothDeviceName, value));
+    }
+
+    public void ReadOnlyAccelerometerFromIMU(String bluetoothDeviceName)
+    {
+        if (this.isOpen())
+            this.send(MessageGenerator.ReadOnlyAccelerometerFromIMU(bluetoothDeviceName));
+    }
+
+    public void ReadOnlyGyroscopeFromIMU(String bluetoothDeviceName)
+    {
+        if (this.isOpen())
+            this.send(MessageGenerator.ReadOnlyGyroscopeFromIMU(bluetoothDeviceName));
+    }
+
+    public void ReadOnlyMagnetometerFromIMU(String bluetoothDeviceName)
+    {
+        if (this.isOpen())
+            this.send(MessageGenerator.ReadOnlyMagnetometerFromIMU(bluetoothDeviceName));
+    }
+
+    public void ReadOnlyAttitudeFromIMU(String bluetoothDeviceName)
+    {
+        if (this.isOpen())
+            this.send(MessageGenerator.ReadOnlyAttitudeFromIMU(bluetoothDeviceName));
+    }
+
+    public void ReadAllDataFromIMU(String bluetoothDeviceName)
+    {
+        if (this.isOpen())
+            this.send(MessageGenerator.ReadAllDataFromIMU(bluetoothDeviceName));
     }
 
     public void CalibrateIMU(String bluetoothDeviceName)
@@ -423,13 +461,13 @@ public class Communication extends WebSocketClient{
     public void ConnectToWebSocketServer()
     {
         this.connect();
-        if (OnWebSocketConnectionStateChangued != null) OnWebSocketConnectionStateChangued.run(this.isOpen());
+        if (OnWebSocketConnectionStateChanged != null) OnWebSocketConnectionStateChanged.run(this.isOpen());
     }
 
     public void DisconnectFromWebSocketServer()
     {
         this.close();
-        if (OnWebSocketConnectionStateChangued != null) OnWebSocketConnectionStateChangued.run(this.isOpen());
+        if (OnWebSocketConnectionStateChanged != null) OnWebSocketConnectionStateChanged.run(this.isOpen());
     }
 
     public void GetOpenGloveArduinoVersionSoftware(String bluetoothDeviceName)

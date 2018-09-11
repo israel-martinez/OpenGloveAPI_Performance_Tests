@@ -13,7 +13,7 @@ namespace C_SharpTest
         public OpenGlove leftHand = new OpenGlove("Left Hand", "OpenGloveIZQ", "leftHand", Url);
         public volatile int MessageReceivedCounter = 0;
 
-        List<int> flexorRegions = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        List<int> flexorRegions = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
         List<int> flexorPins = new List<int> { 17, 17, 17, 17, 17, 17, 17, 17, 17, 17 }; //for simulate more flexors
         List<int> actuatorRegions = new List<int> { 0, 1, 2, 3, 4 };
         List<int> actuatorPositivePins = new List<int> { 11, 10, 9, 3, 6 };
@@ -23,7 +23,7 @@ namespace C_SharpTest
         public volatile int actuatorStepCounter = 0;
 
         List<int> samplesQuantityList = new List<int> { 100, 1000, 2000, 5000, 10000 };
-        List<string> componentTypeList = new List<string> { "actuators", "flexors&IMU"}; //future supported test { "actuators", "flexors", "flexors&IMU", "actuators&flexor&IMU"};
+        List<string> componentTypeList = new List<string> { "actuators", "flexors&IMU" }; //future supported test { "actuators", "flexors", "flexors&IMU", "actuators&flexor&IMU"};
         List<int> componentQuantityList = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
         public MainPage()
@@ -40,9 +40,12 @@ namespace C_SharpTest
             label_actuator4.TextColor = Color.Red;
 
             UpdateOpenGloveInUI();
-            leftHand.Communication.OnAllIMUValuesReceived += OnAllIMUValues;
-            leftHand.Communication.OnFlexorValueReceived+= OnFlexorFunction;
-            leftHand.Communication.OnInfoMessagesReceived += OnInfoMessage;
+            leftHand.Communication.OnAccelerometerValuesReceived += OnAccelerometerValuesReceived;
+            leftHand.Communication.OnGyroscopeValuesReceived += OnGyroscopeValuesReceived;
+            leftHand.Communication.OnMagnometerValuesReceived += OnMagnometerValuesReceived;
+            leftHand.Communication.OnAllIMUValuesReceived += OnAllIMUValuesReceived;
+            leftHand.Communication.OnFlexorValueReceived += OnFlexorValueReceived;
+            leftHand.Communication.OnInfoMessagesReceived += OnInfoMessageReceived;
             leftHand.Communication.OnBluetoothDeviceConnectionStateChanged += OnBluetoothDeviceConnectionStateChanged;
             leftHand.Communication.OnWebSocketConnectionStateChangued += OnWebSocketConnectionStateChangued;
 
@@ -54,7 +57,8 @@ namespace C_SharpTest
 
         public void OnWebSocketConnectionStateChangued(bool isConnected)
         {
-            Device.BeginInvokeOnMainThread(() => {
+            Device.BeginInvokeOnMainThread(() =>
+            {
                 label_webSocketStatus.Text = isConnected ? "Connected" : "Disconnected";
                 label_webSocketStatus.TextColor = isConnected ? Color.Green : Color.Red;
             });
@@ -62,41 +66,78 @@ namespace C_SharpTest
 
         public void OnBluetoothDeviceConnectionStateChanged(bool isConnected)
         {
-            Device.BeginInvokeOnMainThread(() => {
+            Device.BeginInvokeOnMainThread(() =>
+            {
                 MessageReceivedCounter++;
                 label_MessagesReceivedCounter.Text = MessageReceivedCounter.ToString();
-                label_OnMessage.Text = "b,"+isConnected.ToString();
+                label_OnMessage.Text = "b," + isConnected.ToString();
                 label_bluetoothDeviceStatus.Text = isConnected ? "Connected" : "Disconnected";
                 label_bluetoothDeviceStatus.TextColor = isConnected ? Color.Green : Color.Red;
             });
         }
 
-        public void OnInfoMessage(string message)
+        public void OnInfoMessageReceived(string message)
         {
-            Device.BeginInvokeOnMainThread(() => {
+            Device.BeginInvokeOnMainThread(() =>
+            {
                 label_OnMessage.Text = message;
                 MessageReceivedCounter++;
                 label_MessagesReceivedCounter.Text = MessageReceivedCounter.ToString();
             });
         }
-        
-        public void OnAllIMUValues(float ax, float ay, float az, float gx, float gy, float gz, float mx, float my, float mz)
-        {
-            Device.BeginInvokeOnMainThread(() => {
-                label_OnIMU.Text =  String.Join(",", ax, ay, az, gx, gy, gz, mx, my, mz);
-                MessageReceivedCounter++;
-                label_MessagesReceivedCounter.Text = MessageReceivedCounter.ToString();
-            });
-        }
 
-        public void OnFlexorFunction(int region, int value)
+        public void OnFlexorValueReceived(int region, int value)
         {
-            Device.BeginInvokeOnMainThread(() => {
+            Device.BeginInvokeOnMainThread(() =>
+            {
                 label_OnFlexor.Text = $"region: {region}, value: {value}";
                 MessageReceivedCounter++;
                 label_MessagesReceivedCounter.Text = MessageReceivedCounter.ToString();
             });
         }
+
+        public void OnAllIMUValuesReceived(float ax, float ay, float az, float gx, float gy, float gz, float mx, float my, float mz)
+        {
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                label_OnIMU.Text = String.Join(",", ax, ay, az, gx, gy, gz, mx, my, mz);
+                MessageReceivedCounter++;
+                label_MessagesReceivedCounter.Text = MessageReceivedCounter.ToString();
+            });
+        }
+
+        public void OnAccelerometerValuesReceived(float ax, float ay, float az)
+        {
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                label_OnIMU.Text = String.Join(",", ax, ay, az);
+                MessageReceivedCounter++;
+                label_MessagesReceivedCounter.Text = MessageReceivedCounter.ToString();
+            });
+        }
+
+        public void OnGyroscopeValuesReceived(float gx, float gy, float gz)
+        {
+            Device.BeginInvokeOnMainThread(() =>
+           {
+               label_OnIMU.Text = String.Join(",", gx, gy, gz);
+               MessageReceivedCounter++;
+               label_MessagesReceivedCounter.Text = MessageReceivedCounter.ToString();
+           }); 
+        }
+
+        public void OnMagnometerValuesReceived(float mx, float my, float mz)
+        {
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                label_OnIMU.Text = String.Join(",", mx, my, mz);
+                MessageReceivedCounter++;
+                label_MessagesReceivedCounter.Text = MessageReceivedCounter.ToString();
+            });
+        }
+
+
+
 
         public void UpdateOpenGloveInUI()
         {
@@ -192,13 +233,17 @@ namespace C_SharpTest
                     leftHand.AddActuators(actuatorRegions.GetRange(0, componentQuantity), actuatorPositivePins.GetRange(0, componentQuantity), actuatorNegativePins.GetRange(0, componentQuantity));
                 }
                 leftHand.SaveOpenGloveConfiguration(); //Register OpenGlove Configuration on Server
-                    
+
+                label_latencyTestConfiguration.Text = "Loaded";
+                label_latencyTestConfiguration.TextColor = Color.Green;
             }
             else
             {
                 leftHand.ResetFlexors();
                 leftHand.ResetActuators();
                 leftHand.TurnOffIMU();
+                label_latencyTestConfiguration.Text = "Reseted";
+                label_latencyTestConfiguration.TextColor = Color.Gray;
             }
 
         }
@@ -231,11 +276,12 @@ namespace C_SharpTest
                         leftHand.Start();
                         latencyTest.ActuatorsTest2(this.leftHand, folderName, fileName + fileExtension, columnTitle, samplesQuantity, componentQuantity, actuatorRegions.GetRange(0, componentQuantity));
                     }
+                    label_latencyTestStatus.Text = "Running";
+                    label_latencyTestStatus.TextColor = Color.Green;
                 }
                 else
                 {
                     switch_startResetLatencyTest.IsToggled = false;
-
                 }
             }
             else
@@ -243,6 +289,8 @@ namespace C_SharpTest
                 latencyTest.OnLatencyTestCompleted -= OnLatencyTestCompleted;
                 actuatorStepCounter = 0;
                 leftHand.Stop();
+                label_latencyTestStatus.Text = "Stoped";
+                label_latencyTestStatus.TextColor = Color.Red;
             }
         }
 
@@ -256,6 +304,7 @@ namespace C_SharpTest
                 leftHand.AddActuators(actuatorRegions, actuatorPositivePins.GetRange(0,5), actuatorNegativePins.GetRange(0,5));
                 leftHand.AddFlexors(flexorRegions.GetRange(0,2), flexorPins.GetRange(0,2));
                 leftHand.SetThreshold(0);
+                leftHand.SetIMUStatus(true);
 
                 label_loadConfiguration.Text = "Loaded";
                 label_loadConfiguration.TextColor = Color.Green;

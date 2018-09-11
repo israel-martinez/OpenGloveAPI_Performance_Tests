@@ -1,6 +1,6 @@
 package com.israel.martinez.javatest;
 
-import android.support.annotation.MainThread;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -9,9 +9,7 @@ import android.widget.CompoundButton;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.israel.martinez.javatest.OpenGloveAPI_Java_HL.Communication;
 import com.israel.martinez.javatest.OpenGloveAPI_Java_HL.MessageGenerator;
 import com.israel.martinez.javatest.OpenGloveAPI_Java_HL.OpenGlove;
 
@@ -22,7 +20,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener{
 
-    public int MessageReceivedCounter = 0;
+    public int messageReceivedCounter = 0;
 
     List<Integer> flexorRegions = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
     List<Integer> flexorPins = Arrays.asList(17, 17, 17, 17, 17, 17, 17, 17, 17, 17 ); //for simulate more flexors
@@ -40,15 +38,14 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
     OpenGlove leftHand;
     Switch switchWebSocketStatus, switchBluetoothDeviceStatus, switchConfigurationStatus, switchLatencyStatus, switchTurnOnOffActuators;
     Spinner spinnerSamplesQuantity, spinnerComponentType, spinnerComponentQuantity;
-    TextView textViewTotalOfMessageCounter, textViewOnMessage, textViewOnFlexor, textViewOnIMU;
-
-    public int totalOfMessageCounter = 0;
+    TextView textViewOpenGloveInstace, textViewTotalOfMessageCounter, textViewOnMessage, textViewOnFlexor, textViewOnIMU;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        textViewOpenGloveInstace = findViewById(R.id.textView_OpenGloveInstance);
         textViewTotalOfMessageCounter = findViewById(R.id.textView_TotalOfMessageReceived);
         textViewOnMessage = findViewById(R.id.textView_OnMessage);
         textViewOnFlexor = findViewById(R.id.textView_OnFlexor);
@@ -93,7 +90,6 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
         }
     }
 
-
     public void testMessageGenerator(){
         String MainSeparator = ";";
         String SecondarySeparator = ",";
@@ -123,6 +119,11 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
         String url =  "ws://127.0.0.1:7070";
         leftHand = new OpenGlove("Left Hand", "OpenGloveIZQ", "leftHand", new URI(url));
         //leftHand.Communication.OnFlexorValueReceived = this::OnFlexorValueReceived;//(mapping, value) -> OnFlexorValueReceived(mapping, value);
+        String openGloveInstanceInfo = "Name: "+leftHand.getName() +
+                "\nBluetoothDeviceName: " + leftHand.getBluetoothDeviceName() +
+                "\nConfigurationName: " + leftHand.getConfigurationName() +
+                "\nWebSocketEndponint: " + leftHand.getWebSocketEndpointUrl();
+        textViewOpenGloveInstace.setText(openGloveInstanceInfo);
 
     }
 
@@ -140,6 +141,8 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
                     leftHand.Communication.setOnFlexorValueReceived(this::OnFlexorValueReceived);
                     leftHand.Communication.setOnAllIMUValuesReceived(this::OnAllIMUValueReceived);
                     leftHand.Communication.setOnInfoMessagesReceived(this::OnInfoMessageReceived);
+                    leftHand.Communication.setOnBluetoothDeviceConnectionStateChanged(this::OnBluetoothDeviceConnectionStateChanged);
+                    leftHand.Communication.setOnWebSocketConnectionStateChanged(this::OnWebSocketConnectionStateChanged);
                 }
                 else
                     leftHand.DisconnectFromWebSocketServer();
@@ -147,21 +150,38 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
 
             case R.id.switch_BluetoothDeviceStatus:
                 System.out.println("OnSwitch_BluetoothDeviceStatus, isChecked: "+isChecked);
-                if (isChecked)
+                if (isChecked) {
                     leftHand.ConnectToBluetoothDevice();
-                else
+                    switchBluetoothDeviceStatus.setText(getResources().getString(R.string.switch_StatusConnecting));
+                } else {
                     leftHand.DisconnectFromBluetoothDevice();
+                    switchBluetoothDeviceStatus.setText(getResources().getString(R.string.switch_StatusDisconnecting));
+                }
                 break;
 
             case R.id.switch_ConfigurationStatus:
                 System.out.println("OnSwitch_ConfigurationStatus, isChecked: "+isChecked);
                 if (isChecked) {
+                    int sampleQuantity = Integer.parseInt(spinnerSamplesQuantity.getSelectedItem().toString());
+                    String componentType = spinnerComponentType.getSelectedItem().toString();
+                    int componentQuantity = Integer.parseInt(spinnerComponentQuantity.getSelectedItem().toString());
+                    System.out.println("samplesQuantity: " + sampleQuantity + "componentType: "+ componentType +"componentQuantity" + componentQuantity);
+
                     leftHand.GetOpenGloveArduinoVersionSoftware();
-                    leftHand.AddActuators(actuatorRegions, actuatorPositivePins, actuatorNegativePins);
-                    leftHand.AddFlexors(flexorRegions, flexorPins);
-                    leftHand.SetIMUStatus(true);
                     leftHand.SetLoopDelay(0);
                     leftHand.SetThreshold(0);
+
+                    if (componentType.equals("actuators")) {
+                        leftHand.AddActuators(actuatorRegions.subList(0, componentQuantity), actuatorPositivePins.subList(0, componentQuantity), actuatorNegativePins.subList(0, componentQuantity));
+                        switchConfigurationStatus.setText(getResources().getString(R.string.switch_StatusLoaded));
+                        switchConfigurationStatus.setTextColor(Color.GREEN);
+                    }
+                    if (componentType.equals("flexors&IMU")) {
+                        leftHand.SetIMUStatus(true);
+                        leftHand.AddFlexors(flexorRegions.subList(0, componentQuantity), flexorPins.subList(0, componentQuantity));
+                        switchConfigurationStatus.setText(getResources().getString(R.string.switch_StatusLoaded));
+                        switchConfigurationStatus.setTextColor(Color.GREEN);
+                    }
                     leftHand.SaveOpenGloveConfiguration();
                 } else {
                     leftHand.ResetFlexors();
@@ -174,16 +194,24 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
                 System.out.println("OnSwitch_LatencyTestStatus, isChecked: "+isChecked);
                 if (isChecked) {
                     leftHand.Start();
+                    switchLatencyStatus.setText(getResources().getString(R.string.switch_StatusLoaded));
+                    switchLatencyStatus.setTextColor(Color.GREEN);
                 } else {
                     leftHand.Stop();
+                    switchLatencyStatus.setText(getResources().getString(R.string.switch_StatusReseted));
+                    switchLatencyStatus.setTextColor(Color.RED);
                 }
                 break;
             case R.id.switch_TurnOnOffActuators:
                 System.out.println("OnSwitch_TurnOnOffActuators, isChecked: "+isChecked);
                 if (isChecked) {
                     leftHand.TurnOnActuators();
+                    switchTurnOnOffActuators.setText(getResources().getString(R.string.switch_StatusActivated));
+                    switchTurnOnOffActuators.setTextColor(Color.GREEN);
                 } else {
                     leftHand.TurnOffActuators();
+                    switchTurnOnOffActuators.setText(getResources().getString(R.string.switch_StatusDeactivated));
+                    switchTurnOnOffActuators.setTextColor(Color.RED);
                 }
                 break;
 
@@ -193,18 +221,45 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
         }
     }
 
+    public void OnBluetoothDeviceConnectionStateChanged(boolean isConnected) {
+        if (isConnected) {
+            switchBluetoothDeviceStatus.setText(getResources().getString(R.string.switch_StatusConnected));
+            switchBluetoothDeviceStatus.setTextColor(Color.GREEN);
+        } else {
+            switchBluetoothDeviceStatus.setText(getResources().getString(R.string.switch_StatusDisconnected));
+            switchBluetoothDeviceStatus.setTextColor(Color.RED);
+        }
+    }
+
+    public void OnWebSocketConnectionStateChanged(boolean isConnected) {
+        if (isConnected) {
+            switchWebSocketStatus.setText(getResources().getString(R.string.switch_StatusConnected));
+            switchWebSocketStatus.setTextColor(Color.GREEN);
+        } else {
+            switchWebSocketStatus.setText(getResources().getString(R.string.switch_StatusDisconnected));
+            switchWebSocketStatus.setTextColor(Color.RED);
+        }
+    }
+
     public void OnFlexorValueReceived(int mapping, int value) {
-        totalOfMessageCounter++;
-        this.runOnUiThread(() -> textViewOnFlexor.setText(String.valueOf(this.totalOfMessageCounter)));
+        messageReceivedCounter++;
+        updateUI();
+        this.runOnUiThread(() -> textViewOnFlexor.setText(TextUtils.join(",", Arrays.asList("f", mapping, value))));
     }
 
     public void OnAllIMUValueReceived(float ax, float ay, float az, float gx, float gy, float gz, float mx, float my, float mz) {
-        totalOfMessageCounter++;
+        messageReceivedCounter++;
+        updateUI();
         this.runOnUiThread(() -> textViewOnIMU.setText(TextUtils.join(",", Arrays.asList(ax, ay, az, gx, gy, gz, mx, my, mz))));
     }
 
     public void OnInfoMessageReceived(String message) {
-        totalOfMessageCounter++;
+        messageReceivedCounter++;
+        updateUI();
         this.runOnUiThread(() -> textViewOnMessage.setText(message));
+    }
+
+    public void updateUI() {
+        this.runOnUiThread(() -> textViewTotalOfMessageCounter.setText(String.valueOf(messageReceivedCounter)));
     }
 }

@@ -13,23 +13,25 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
         public string BluetoothDeviceName { get; set; }
         public string ConfigurationName { get; set; }
 
-        public delegate void ActivateActuatorsTimeTestOnServer(long nanoSeconds);
-        public delegate void ActivateActuatorsTimeTestOnArduino(long microSeconds);
+        public delegate void TimeTestServerLatencyActivateActuatorsReceived(long nanoSeconds);
+        public delegate void TimeTestArduinoLatencyActivateActuatorsReceived(long microSeconds);
         public delegate void FlexorMovement(int region, int value);
         public delegate void AccelerometerValues(float ax, float ay, float az);
         public delegate void GyroscopeValues(float gx, float gy, float gz);
         public delegate void MagnometerValues(float mx, float my, float mz);
+        public delegate void AttitudeValues(float pitch, float roll, float yaw);
         public delegate void AllIMUValues(float ax, float ay, float az, float gx, float gy, float gz, float mx, float my, float mz);
         public delegate void BluetoothDeviceConnectionState(bool isConnected);
         public delegate void WebSocketConnectionState(bool isConnected);
         public delegate void InfoMessage(string message);
 
-        public event ActivateActuatorsTimeTestOnServer OnActivateActuatorsTimeTestOnServerReceived;
-        public event ActivateActuatorsTimeTestOnArduino OnActivateActuatorsTimeTestOnArduinoReceived;
+        public event TimeTestServerLatencyActivateActuatorsReceived OnTimeTestServerLatencyActivateActuatorsReceived;
+        public event TimeTestArduinoLatencyActivateActuatorsReceived OnTimeTestArduinoLatencyActivateActuatorsReceived;
         public event FlexorMovement OnFlexorValueReceived;
         public event AccelerometerValues OnAccelerometerValuesReceived;
         public event GyroscopeValues OnGyroscopeValuesReceived;
         public event MagnometerValues OnMagnometerValuesReceived;
+        public event AttitudeValues OnAttitudeValuesReceived;
         public event AllIMUValues OnAllIMUValuesReceived;
         public event BluetoothDeviceConnectionState OnBluetoothDeviceConnectionStateChanged;
         public event WebSocketConnectionState OnWebSocketConnectionStateChangued;
@@ -42,8 +44,6 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
             this.WebSocket.OnMessage += OnMessage;
             this.WebSocket.OnClose += OnClose;
             this.WebSocket.OnError += OnError;
-
-            //this._IsConnectedToBluetoothDevice = false;
             this.BluetoothDeviceName = bluetoothDeviceName;
             this.ConfigurationName = configurationName;
 
@@ -70,7 +70,7 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
         private void MessageHandler(string message)
         {
             int mapping, value;
-            float valueX, valueY, valueZ;
+            float valueX, valueY, valueZ, pitch, roll, yaw;
             string[] words;
 
             if (message != null)
@@ -106,14 +106,20 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
                         case "z":
                             OnAllIMUValuesReceived?.Invoke(float.Parse(words[1], CultureInfo.InvariantCulture), float.Parse(words[2], CultureInfo.InvariantCulture), float.Parse(words[3], CultureInfo.InvariantCulture), float.Parse(words[4], CultureInfo.InvariantCulture), float.Parse(words[5], CultureInfo.InvariantCulture), float.Parse(words[6], CultureInfo.InvariantCulture), float.Parse(words[7], CultureInfo.InvariantCulture), float.Parse(words[8], CultureInfo.InvariantCulture), float.Parse(words[9], CultureInfo.InvariantCulture));
                             break;
+                        case "r":
+                            pitch = float.Parse(words[1], CultureInfo.InvariantCulture);
+                            roll = float.Parse(words[2], CultureInfo.InvariantCulture);
+                            yaw = float.Parse(words[3], CultureInfo.InvariantCulture);
+                            OnAttitudeValuesReceived?.Invoke(pitch, roll, yaw);
+                            break;
                         case "b":
                             OnBluetoothDeviceConnectionStateChanged?.Invoke(bool.Parse(words[1]));
                             break;
                         case "us":
-                            OnActivateActuatorsTimeTestOnArduinoReceived?.Invoke(long.Parse(words[1]));
+                            OnTimeTestArduinoLatencyActivateActuatorsReceived?.Invoke(long.Parse(words[1]));
                             break;
                         case "ns":
-                            OnActivateActuatorsTimeTestOnServerReceived?.Invoke(long.Parse(words[1]));
+                            OnTimeTestServerLatencyActivateActuatorsReceived?.Invoke(long.Parse(words[1]));
                             break;
                             
                         default:
@@ -328,6 +334,36 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
         {
             if (this.WebSocket.IsAlive) 
                 this.WebSocket.Send(MessageGenerator.SetIMUChoosingData(bluetoothDeviceName, value));
+        }
+
+        public void ReadOnlyAccelerometerFromIMU(string bluetoothDeviceName)
+        {
+            if (this.WebSocket.IsAlive)
+                this.WebSocket.Send(MessageGenerator.ReadOnlyAccelerometerFromIMU(bluetoothDeviceName));
+        }
+
+        public void ReadOnlyGyroscopeFromIMU(string bluetoothDeviceName)
+        {
+            if (this.WebSocket.IsAlive)
+                this.WebSocket.Send(MessageGenerator.ReadOnlyGyroscopeFromIMU(bluetoothDeviceName));
+        }
+
+        public void ReadOnlyMagnetometerFromIMU(string bluetoothDeviceName)
+        {
+            if (this.WebSocket.IsAlive)
+                this.WebSocket.Send(MessageGenerator.ReadOnlyMagnetometerFromIMU(bluetoothDeviceName));
+        }
+
+        public void ReadOnlyAttitudeFromIMU(string bluetoothDeviceName)
+        {
+            if (this.WebSocket.IsAlive)
+                this.WebSocket.Send(MessageGenerator.ReadOnlyAttitudeFromIMU(bluetoothDeviceName));
+        }
+
+        public void ReadAllDataFromIMU(string bluetoothDeviceName)
+        {
+            if (this.WebSocket.IsAlive)
+                this.WebSocket.Send(MessageGenerator.ReadAllDataFromIMU(bluetoothDeviceName));
         }
 
         public void CalibrateIMU(string bluetoothDeviceName)

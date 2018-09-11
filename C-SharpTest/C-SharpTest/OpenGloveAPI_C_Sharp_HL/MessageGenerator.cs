@@ -254,6 +254,31 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
             return Join(MainSeparator, (int)OpenGloveActions.SetIMUChoosingData, bluetoothDeviceName, Empty, value, Empty);
         }
 
+        public string ReadOnlyAccelerometerFromIMU(string bluetoothDeviceName)
+        {
+            return Join(MainSeparator, (int)OpenGloveActions.ReadOnlyAccelerometerFromIMU, bluetoothDeviceName, Empty, Empty, Empty);
+        }
+
+        public string ReadOnlyGyroscopeFromIMU(string bluetoothDeviceName)
+        {
+            return Join(MainSeparator, (int)OpenGloveActions.ReadOnlyGyroscopeFromIMU, bluetoothDeviceName, Empty, Empty, Empty);
+        }
+
+        public string ReadOnlyMagnetometerFromIMU(string bluetoothDeviceName)
+        {
+            return Join(MainSeparator, (int)OpenGloveActions.ReadOnlyMagnetometerFromIMU, bluetoothDeviceName, Empty, Empty, Empty);
+        }
+
+        public string ReadOnlyAttitudeFromIMU(string bluetoothDeviceName)
+        {
+            return Join(MainSeparator, (int)OpenGloveActions.ReadOnlyAttitudeFromIMU, bluetoothDeviceName, Empty, Empty, Empty);
+        }
+
+        public string ReadAllDataFromIMU(string bluetoothDeviceName)
+        {
+            return Join(MainSeparator, (int)OpenGloveActions.ReadAllDataFromIMU, bluetoothDeviceName, Empty, Empty, Empty);
+        }
+
         public string CalibrateIMU(string bluetoothDeviceName)
         {
             return Join(MainSeparator, (int)OpenGloveActions.CalibrateIMU, bluetoothDeviceName, Empty, Empty, Empty);

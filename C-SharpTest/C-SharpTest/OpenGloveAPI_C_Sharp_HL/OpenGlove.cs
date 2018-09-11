@@ -210,27 +210,27 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
 
         public void ReadOnlyAccelerometerFromIMU()
         {
-            this.SetIMUChoosingData(0);
+            this.Communication.ReadOnlyAccelerometerFromIMU(BluetoothDeviceName);
         }
 
         public void ReadOnlyGyroscopeFromIMU()
         {
-            this.SetIMUChoosingData(1);
+            this.Communication.ReadOnlyGyroscopeFromIMU(BluetoothDeviceName);
         }
 
         public void ReadOnlyMagnetometerFromIMU()
         {
-            this.SetIMUChoosingData(2);
+            this.Communication.ReadOnlyMagnetometerFromIMU(BluetoothDeviceName);
         }
 
         public void ReadOnlyAttitudeFromIMU()
         {
-            this.SetIMUChoosingData(3);
+            this.Communication.ReadOnlyAttitudeFromIMU(BluetoothDeviceName);
         }
 
         public void ReadAllDataFromIMU()
         {
-            this.SetIMUChoosingData(-1);
+            this.Communication.ReadAllDataFromIMU(BluetoothDeviceName);
         }
 
         public void CalibrateIMU()
@@ -270,6 +270,11 @@ namespace CSharpTest.OpenGloveAPI_C_Sharp_HL
         {
             this.Communication.GetOpenGloveArduinoVersionSoftware(BluetoothDeviceName);
         }
+
+        //TODO Future work
+        //public List<string> GetAllPairedDevices();
+
+        //public List<string> GetOpenGloveDevicesOnServer();
     }
 
     /*
